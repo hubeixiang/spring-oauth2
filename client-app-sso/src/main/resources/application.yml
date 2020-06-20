@@ -1,0 +1,43 @@
+server:
+  port: 7081
+
+logging:
+  level:
+    root: WARN
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+
+spring:
+  thymeleaf:
+    cache: false
+
+security:
+  oauth2:
+    client:
+      messaging-client-auth-code:
+        client-id: messaging-client-sso
+        client-secret: secret
+        grant-type: authorization_code
+        user-authorization-uri: http://127.0.0.1:7090/oauth/authorize
+        access-token-uri: http://127.0.0.1:7090/oauth/token
+        scope: message.read, message.write
+#        pre-established-redirect-uri: http://localhost:8080/authorized
+        pre-established-redirect-uri: http://localhost:7081/welcome
+        use-current-uri: false
+      messaging-client-client-creds:
+        client-id: messaging-client-sso
+        client-secret: secret
+        grant-type: client_credentials
+        access-token-uri: http://127.0.0.1:7090/oauth/token
+        scope: message.read, message.write
+      messaging-client-password:
+        client-id: messaging-client-sso
+        client-secret: secret
+        grant-type: password
+        access-token-uri: http://127.0.0.1:7090/oauth/token
+        scope: message.read, message.write
+
+messages:
+  base-uri: http://localhost:7092/messages
+  welcome-uri: http://localhost:7092/welcome
