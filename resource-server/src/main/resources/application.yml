@@ -13,4 +13,4 @@ security:
     resource:
       filter-order: 3
       jwk:
-        key-set-uri: http://127.0.0.1:7090/oauth2/keys
+        key-set-uri: http://authserver:7090/oauth2/keys

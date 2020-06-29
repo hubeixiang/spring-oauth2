@@ -31,25 +31,25 @@ security:
         client-id: messaging-client
         client-secret: secret
         grant-type: authorization_code
-        user-authorization-uri: http://127.0.0.1:7090/oauth/authorize
-        access-token-uri: http://127.0.0.1:7090/oauth/token
+        user-authorization-uri: http://authserver:7090/oauth/authorize
+        access-token-uri: http://authserver:7090/oauth/token
         scope: message.read, message.write
 #        pre-established-redirect-uri: http://localhost:7080/authorized
-        pre-established-redirect-uri: http://localhost:7080/welcome
+        pre-established-redirect-uri: http://127.0.0.1:7080/welcome
         use-current-uri: false
       messaging-client-client-creds:
         client-id: messaging-client
         client-secret: secret
         grant-type: client_credentials
-        access-token-uri: http://127.0.0.1:7090/oauth/token
+        access-token-uri: http://authserver:7090/oauth/token
         scope: message.read, message.write
       messaging-client-password:
         client-id: messaging-client
         client-secret: secret
         grant-type: password
-        access-token-uri: http://127.0.0.1:7090/oauth/token
+        access-token-uri: http://authserver:7090/oauth/token
         scope: message.read, message.write
 
 messages:
-  base-uri: http://localhost:7092/messages
-  welcome-uri: http://localhost:7092/welcome
+  base-uri: http://resourceserver:7092/messages
+  welcome-uri: http://resourceserver:7092/welcome
