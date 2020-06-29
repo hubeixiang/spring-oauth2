@@ -32,7 +32,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  */
 @Configuration
 @EnableOAuth2Client
-public class OAuth2ClientConfig {
+public class CustomOAuth2ClientConfig {
 
 	@ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-auth-code")
 	@Bean

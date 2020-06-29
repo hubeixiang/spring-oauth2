@@ -3,14 +3,26 @@ server:
 
 logging:
   level:
-    root: WARN
-    org.springframework.web: INFO
-    org.springframework.security: INFO
-    org.springframework.security.oauth2: INFO
+    root: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
 
 spring:
   thymeleaf:
     cache: false
+  datasource:
+    url: jdbc:mysql://192.168.1.21:3306/rmdb?useSSL=false&characterEncoding=UTF-8
+    username: rmdb
+    password: rmdb
+    driver-class-name: com.mysql.jdbc.Driver
+    max-idle: 5
+    max-wait: 10000
+    min-idle: 2
+    initial-size: 3
+    validation-query: SELECT 1
+    time-between-eviction-runs-millis: 18800
+    jdbc-interceptors: ConnectionState;SlowQueryReport(threshold=50)
 
 security:
   oauth2:

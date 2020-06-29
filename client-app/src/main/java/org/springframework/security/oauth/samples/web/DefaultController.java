@@ -51,7 +51,6 @@ public class DefaultController {
         return "welcome";
     }
 
-
     @GetMapping("/index")
     public String index() {
         return "index";

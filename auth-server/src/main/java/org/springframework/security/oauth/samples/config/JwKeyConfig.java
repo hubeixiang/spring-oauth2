@@ -27,7 +27,7 @@ import java.security.interfaces.RSAPublicKey;
 /**
  * @author Joe Grandja
  */
-class KeyConfig {
+class JwKeyConfig {
 	private static final String KEY_STORE_FILE = ".keystore-oauth2-demo";
 	private static final String KEY_STORE_PASSWORD = "admin1234";
 	private static final String KEY_ALIAS = "oauth2-demo-key";
