@@ -45,7 +45,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/oauth2/keys").permitAll()
+                .antMatchers("/oauth2/keys","/favicon.ico","/webjars/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin();//.loginPage("/login").failureUrl("/login-error");

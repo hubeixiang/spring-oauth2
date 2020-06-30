@@ -19,7 +19,7 @@
                                         <span sec:authentication="name">User</span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a id="sign-out" href="javascript:document.logoutForm.submit()">Sign Out</a></li>
+                                        <li><a id="sign-out" href="javascript:document.logoutForm.submit()">Sign Out Web Server(Not Auth Server)</a></li>
                                     </ul>
                                     <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
                                         <input hidden type="submit" value="Sign Out"/>

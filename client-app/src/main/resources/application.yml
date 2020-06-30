@@ -34,8 +34,8 @@ security:
         user-authorization-uri: http://authserver:7090/oauth/authorize
         access-token-uri: http://authserver:7090/oauth/token
         scope: message.read, message.write
-#        pre-established-redirect-uri: http://localhost:7080/authorized
-        pre-established-redirect-uri: http://127.0.0.1:7080/welcome
+        pre-established-redirect-uri: http://webserver:7080/authorized
+#        pre-established-redirect-uri: http://webserver:7080/welcome
         use-current-uri: false
       messaging-client-client-creds:
         client-id: messaging-client
