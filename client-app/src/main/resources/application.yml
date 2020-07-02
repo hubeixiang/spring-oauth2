@@ -37,6 +37,15 @@ security:
         pre-established-redirect-uri: http://webserver:7080/authorized
 #        pre-established-redirect-uri: http://webserver:7080/welcome
         use-current-uri: false
+      messaging-client-implicit:
+          client-id: messaging-client
+          client-secret: secret
+          grant-type: implicit
+          access-token-uri: http://authserver:7090/oauth/authorize
+          scope: message.read, message.write
+          pre-established-redirect-uri: http://webserver:7080/authorized
+          #        pre-established-redirect-uri: http://webserver:7080/welcome
+          use-current-uri: false
       messaging-client-client-creds:
         client-id: messaging-client
         client-secret: secret

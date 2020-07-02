@@ -29,15 +29,16 @@ import org.springframework.web.client.RestTemplate;
  */
 @Controller
 public class DefaultController {
+
     @Value("${messages.welcome-uri}")
     private String messagesWelcomeUri;
-
     @Autowired
     @Qualifier("messagingClientAuthCodeRestTemplate")
     private OAuth2RestTemplate messagingClientAuthCodeRestTemplate;
-
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private ImplicitUri implicitUri;
 
     @GetMapping("/")
     public String root() {
@@ -52,7 +53,8 @@ public class DefaultController {
     }
 
     @GetMapping("/index")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("implicitUri", implicitUri.generatorUri());
         return "index";
     }
 
@@ -66,4 +68,6 @@ public class DefaultController {
         model.addAttribute("loginError", true);
         return login();
     }
+
+
 }

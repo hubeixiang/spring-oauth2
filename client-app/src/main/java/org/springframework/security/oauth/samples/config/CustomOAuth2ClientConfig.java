@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.security.oauth2.client.token.grant.implicit.ImplicitResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
@@ -34,40 +35,46 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableOAuth2Client
 public class CustomOAuth2ClientConfig {
 
-	@ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-auth-code")
-	@Bean
-	public OAuth2ProtectedResourceDetails messagingClientAuthCodeDetails() {
-		return new AuthorizationCodeResourceDetails();
-	}
+    @ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-auth-code")
+    @Bean
+    public OAuth2ProtectedResourceDetails messagingClientAuthCodeDetails() {
+        return new AuthorizationCodeResourceDetails();
+    }
 
-	@ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-client-creds")
-	@Bean
-	public OAuth2ProtectedResourceDetails messagingClientClientCredsDetails() {
-		return new ClientCredentialsResourceDetails();
-	}
+    @ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-implicit")
+    @Bean
+    public OAuth2ProtectedResourceDetails messagingClientImplicitDetails() {
+        return new ImplicitResourceDetails();
+    }
 
-	@ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-password")
-	@Bean
-	public OAuth2ProtectedResourceDetails messagingClientPasswordDetails() {
-		return new ResourceOwnerPasswordResourceDetails();
-	}
+    @ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-client-creds")
+    @Bean
+    public OAuth2ProtectedResourceDetails messagingClientClientCredsDetails() {
+        return new ClientCredentialsResourceDetails();
+    }
 
-	@Bean
-	public OAuth2RestTemplate messagingClientAuthCodeRestTemplate(
-			@Qualifier("messagingClientAuthCodeDetails") OAuth2ProtectedResourceDetails resourceDetails,
-			OAuth2ClientContext oauth2ClientContext) {
-		return new OAuth2RestTemplate(resourceDetails, oauth2ClientContext);
-	}
+    @ConfigurationProperties(prefix = "security.oauth2.client.messaging-client-password")
+    @Bean
+    public OAuth2ProtectedResourceDetails messagingClientPasswordDetails() {
+        return new ResourceOwnerPasswordResourceDetails();
+    }
 
-	@Bean
-	public OAuth2RestTemplate messagingClientClientCredsRestTemplate(
-			@Qualifier("messagingClientClientCredsDetails") OAuth2ProtectedResourceDetails resourceDetails) {
-		return new OAuth2RestTemplate(resourceDetails);
-	}
+    @Bean
+    public OAuth2RestTemplate messagingClientAuthCodeRestTemplate(
+            @Qualifier("messagingClientAuthCodeDetails") OAuth2ProtectedResourceDetails resourceDetails,
+            OAuth2ClientContext oauth2ClientContext) {
+        return new OAuth2RestTemplate(resourceDetails, oauth2ClientContext);
+    }
 
-	@Bean
-	public OAuth2RestTemplate messagingClientPasswordRestTemplate(
-			@Qualifier("messagingClientPasswordDetails") OAuth2ProtectedResourceDetails resourceDetails) {
-		return new OAuth2RestTemplate(resourceDetails);
-	}
+    @Bean
+    public OAuth2RestTemplate messagingClientClientCredsRestTemplate(
+            @Qualifier("messagingClientClientCredsDetails") OAuth2ProtectedResourceDetails resourceDetails) {
+        return new OAuth2RestTemplate(resourceDetails);
+    }
+
+    @Bean
+    public OAuth2RestTemplate messagingClientPasswordRestTemplate(
+            @Qualifier("messagingClientPasswordDetails") OAuth2ProtectedResourceDetails resourceDetails) {
+        return new OAuth2RestTemplate(resourceDetails);
+    }
 }

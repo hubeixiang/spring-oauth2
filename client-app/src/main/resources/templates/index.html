@@ -41,6 +41,9 @@
                         <a href="/authorize?grant_type=authorization_code" th:href="@{/authorize?grant_type=authorization_code}"><span style="font-size:medium">Authorization Code</span></a>
                     </li>
                     <li class="list-group-item">
+                        <a href="/authorize?grant_type=implicit" th:href="${implicitUri}"><span style="font-size:medium">Implicit</span></a>
+                    </li>
+                    <li class="list-group-item">
                         <a href="/authorize?grant_type=client_credentials" th:href="@{/authorize?grant_type=client_credentials}"><span style="font-size:medium">Client Credentials</span></a>
                     </li>
                     <li class="list-group-item">

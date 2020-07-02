@@ -37,6 +37,9 @@ public class AuthorizationController {
 	private String messagesBaseUri;
 
 	@Autowired
+	private ImplicitUri implicitUri;
+
+	@Autowired
 	@Qualifier("messagingClientAuthCodeRestTemplate")
 	private OAuth2RestTemplate messagingClientAuthCodeRestTemplate;
 
@@ -53,6 +56,7 @@ public class AuthorizationController {
 	public String authorization_code_grant(Model model) {
 		String[] messages = this.messagingClientAuthCodeRestTemplate.getForObject(this.messagesBaseUri, String[].class);
 		model.addAttribute("messages", messages);
+		model.addAttribute("implicitUri", implicitUri.generatorUri());
 		return "index";
 	}
 
@@ -60,6 +64,7 @@ public class AuthorizationController {
 	public String authorized(Model model) {
 		String[] messages = this.messagingClientAuthCodeRestTemplate.getForObject(this.messagesBaseUri, String[].class);
 		model.addAttribute("messages", messages);
+		model.addAttribute("implicitUri", implicitUri.generatorUri());
 		return "index";
 	}
 
@@ -67,6 +72,7 @@ public class AuthorizationController {
 	public String client_credentials_grant(Model model) {
 		String[] messages = this.messagingClientClientCredsRestTemplate.getForObject(this.messagesBaseUri, String[].class);
 		model.addAttribute("messages", messages);
+		model.addAttribute("implicitUri", implicitUri.generatorUri());
 		return "index";
 	}
 
@@ -84,6 +90,7 @@ public class AuthorizationController {
 		passwordResourceDetails.setUsername(null);
 		passwordResourceDetails.setPassword(null);
 
+		model.addAttribute("implicitUri", implicitUri.generatorUri());
 		return "index";
 	}
 }
