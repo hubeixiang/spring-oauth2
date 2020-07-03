@@ -57,6 +57,7 @@ public class AuthorizationController {
 		String[] messages = this.messagingClientAuthCodeRestTemplate.getForObject(this.messagesBaseUri, String[].class);
 		model.addAttribute("messages", messages);
 		model.addAttribute("implicitUri", implicitUri.generatorUri());
+		model.addAttribute("refreshTokenUri", implicitUri.refreshTokenUri());
 		return "index";
 	}
 
@@ -65,6 +66,7 @@ public class AuthorizationController {
 		String[] messages = this.messagingClientAuthCodeRestTemplate.getForObject(this.messagesBaseUri, String[].class);
 		model.addAttribute("messages", messages);
 		model.addAttribute("implicitUri", implicitUri.generatorUri());
+		model.addAttribute("refreshTokenUri", implicitUri.refreshTokenUri());
 		return "index";
 	}
 
@@ -73,6 +75,7 @@ public class AuthorizationController {
 		String[] messages = this.messagingClientClientCredsRestTemplate.getForObject(this.messagesBaseUri, String[].class);
 		model.addAttribute("messages", messages);
 		model.addAttribute("implicitUri", implicitUri.generatorUri());
+		model.addAttribute("refreshTokenUri", implicitUri.refreshTokenUri());
 		return "index";
 	}
 
@@ -91,6 +94,7 @@ public class AuthorizationController {
 		passwordResourceDetails.setPassword(null);
 
 		model.addAttribute("implicitUri", implicitUri.generatorUri());
+		model.addAttribute("refreshTokenUri", implicitUri.refreshTokenUri());
 		return "index";
 	}
 }

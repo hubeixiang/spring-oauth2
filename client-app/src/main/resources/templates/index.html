@@ -42,6 +42,10 @@
                     </li>
                     <li class="list-group-item">
                         <a th:href="${implicitUri}"><span style="font-size:medium">Implicit</span></a>
+                        <li th:if="${refreshTokenUrix}" class="list-group-item">
+                            <input type="text" name="accessToken" id="accessToken"/>
+                            <a th:href="${refreshTokenUri} + ${'accessToken'}"><span style="font-size:medium">refresh token</span> </a>
+                        </li>
                     </li>
                     <li class="list-group-item">
                         <a href="/authorize?grant_type=client_credentials" th:href="@{/authorize?grant_type=client_credentials}"><span style="font-size:medium">Client Credentials</span></a>

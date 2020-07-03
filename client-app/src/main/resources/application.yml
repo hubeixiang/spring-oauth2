@@ -41,7 +41,8 @@ security:
           client-id: messaging-client
           client-secret: secret
           grant-type: implicit
-          access-token-uri: http://authserver:7090/oauth/authorize
+          user-authorization-uri: http://authserver:7090/oauth/authorize
+          access-token-uri: http://authserver:7090/oauth/token
           scope: message.read, message.write
           pre-established-redirect-uri: http://webserver:7080/authorized
           #        pre-established-redirect-uri: http://webserver:7080/welcome

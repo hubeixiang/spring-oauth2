@@ -55,6 +55,7 @@ public class DefaultController {
     @GetMapping("/index")
     public String index(Model model) {
         model.addAttribute("implicitUri", implicitUri.generatorUri());
+        model.addAttribute("refreshTokenUri", implicitUri.refreshTokenUri());
         return "index";
     }
 
