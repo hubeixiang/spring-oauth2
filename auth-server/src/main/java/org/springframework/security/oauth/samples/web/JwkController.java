@@ -33,9 +33,4 @@ public class JwkController {
     public String keys() {
         return this.jwkSet.toString();
     }
-
-    @GetMapping(value = "/")
-    public String index() {
-        return "{}";
-    }
 }
