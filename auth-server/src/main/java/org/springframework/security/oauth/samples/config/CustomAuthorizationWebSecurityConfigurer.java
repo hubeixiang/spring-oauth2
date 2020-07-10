@@ -35,6 +35,7 @@ import org.springframework.security.oauth.commons.dao.AuthoritiesDao;
 import org.springframework.security.oauth.commons.dao.UserDao;
 import org.springframework.security.oauth.commons.user.HiosUserDetailsService;
 import org.springframework.security.oauth.samples.custom.CustomAuthenticationSuccessHandler;
+import org.springframework.security.oauth.samples.custom.CustomInvalidSessionStrategy;
 import org.springframework.security.oauth.samples.custom.CustomSessionInformationExpiredStrategy;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -78,6 +79,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 
         //session 管理
         http.sessionManagement()
+                .invalidSessionUrl("/session/invalid")
 //                .invalidSessionStrategy(new CustomInvalidSessionStrategy())
                 // 设置同一个用户只能有一个登陆session
                 .maximumSessions(1)
@@ -111,9 +113,9 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 //用户登出成功处理
                 .logoutSuccessHandler(logoutSuccessHandler)
                 //退出时session失效
-                .invalidateHttpSession(true);
+                .invalidateHttpSession(true)
 //                退出时删除指定的cookie
-//                .deleteCookies("JSESSIONID");
+                .deleteCookies("JSESSIONID");
 
 
         http.csrf().disable();

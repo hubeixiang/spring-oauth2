@@ -20,6 +20,11 @@ import java.util.Locale;
 
 @Controller
 public class WelcomeLoginController {
+    @GetMapping("session/invalid")
+    public String sessionInvalid() {
+        return "redirect:/index";
+    }
+
     @GetMapping("/")
     public String root() {
         return "redirect:/index";
