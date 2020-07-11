@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth.samples.web.url.AuthorizationCodeUrl;
 import org.springframework.security.oauth.samples.web.url.ClientCredentialsUrl;
 import org.springframework.security.oauth.samples.web.url.ImplicitUrl;
+import org.springframework.security.oauth.samples.web.url.RefreshTokenUri;
 import org.springframework.security.oauth.samples.web.url.ResourceOwnerPasswordCredentialsUrl;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
@@ -89,6 +90,9 @@ public class WelcomeLoginController {
         String userName = getUserName();
         ResourceOwnerPasswordCredentialsUrl passwordCredentialsUrl = new ResourceOwnerPasswordCredentialsUrl(httpPath, contextPath, redirect, userName);
         model.addAttribute("password_token_url", passwordCredentialsUrl.getMyUrl());
+        //refresh token
+        RefreshTokenUri refreshTokenUri = new RefreshTokenUri(httpPath, contextPath);
+        model.addAttribute("refresh_token_url", refreshTokenUri.getMyUrl());
     }
 
     private void appendUserName(Model model) {
