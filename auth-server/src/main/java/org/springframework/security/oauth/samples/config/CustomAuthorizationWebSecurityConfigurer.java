@@ -84,7 +84,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 // 设置同一个用户只能有一个登陆session
                 .maximumSessions(1)
                 // 设置为true，即禁止后面其它人的登录 ,不设置则是后登录导致前登录失效
-                .maxSessionsPreventsLogin(true)
+                .maxSessionsPreventsLogin(false)
                 //其他地方登录session失效处理策略
                 .expiredSessionStrategy(new CustomSessionInformationExpiredStrategy())
                 //设置自己的sessionRegistry

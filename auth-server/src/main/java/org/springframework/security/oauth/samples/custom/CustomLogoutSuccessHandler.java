@@ -44,14 +44,19 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
                                 Authentication authentication)
             throws ServletException, IOException {
         // 登录成功后，进行数据处理
-        System.out.println("用户登出成功啦");
-        String authenticationStr = objectMapper.writeValueAsString(authentication);
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            authenticationStr = "用户密码登录:" + authenticationStr;
-        }
-        System.out.println("用户登出信息打印：" + authenticationStr);
+        if(authentication != null){
+            System.out.println("用户登出成功啦");
+            String authenticationStr = objectMapper.writeValueAsString(authentication);
+            if (authentication instanceof UsernamePasswordAuthenticationToken) {
+                authenticationStr = "用户密码登录:" + authenticationStr;
+            }
+            System.out.println("用户登出信息打印：" + authenticationStr);
 
-        deleteSessionRegistry(authentication);
+            deleteSessionRegistry(authentication);
+        }else{
+            System.out.println("session超时用户登出");
+        }
+
 
         super.onLogoutSuccess(request, response, authentication);
     }
