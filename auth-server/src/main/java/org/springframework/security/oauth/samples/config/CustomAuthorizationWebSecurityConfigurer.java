@@ -63,6 +63,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     // @formatter:off
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().disable();
         http.authorizeRequests()
                 //定义不用验证的url
                 .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome").permitAll()
