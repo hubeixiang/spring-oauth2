@@ -7,7 +7,8 @@ public class CredentialsEntity {
     private String grantTypeKey = "grant_type";
     private String redirectUriKey = "redirect_uri";
     private String responseTypeKey = "response_type";
-    private String clientId = "messaging-client";
+    //    private String clientId = "messaging-client";
+    private String clientId = System.getProperty("clientId", "messaging-client");
     private String clientSecret = "secret";
     private String scope = "message.read message.write";
 

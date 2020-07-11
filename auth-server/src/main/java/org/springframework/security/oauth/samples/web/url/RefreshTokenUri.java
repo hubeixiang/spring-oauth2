@@ -22,12 +22,12 @@ public class RefreshTokenUri {
         if (StringUtils.isEmpty(contextPath)) {
             uri = String.format("%s/%s?%s&%s&%s&%s", httpPath, oauthUrl
                     , cre.getParamGrantType(grantType)
-                    , cre.getParamScope(), cre.getParamClientId()
+                    , cre.getParamScope(), cre.getParamClient()
                     , cre.getParamVar(grantType, "要刷新的token"));
         } else {
             uri = String.format("%s/%s/%s?%s&%s&%s&%s", httpPath, contextPath, oauthUrl
                     , cre.getParamGrantType(grantType)
-                    , cre.getParamScope(), cre.getParamClientId()
+                    , cre.getParamScope(), cre.getParamClient()
                     , cre.getParamVar(grantType, "要刷新的token"));
         }
         myUrl = new MyUrl();

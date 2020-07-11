@@ -95,7 +95,6 @@
                 <div>
                     <h4 class="panel-title-code">Resource Owner Password Credentials</h4>
                     <div>
-                        <h4 class="panel-title-code">Client Credentials</h4>
                         <div>
                             <h5 class="code2" >
                                 获取Token
@@ -111,14 +110,15 @@
                 <div>
                     <h4 class="panel-title-code">Token Refresh</h4>
                     <div>
-                        <h4 class="panel-title-code">Token Refresh</h4>
                         <div>
                             <h5 class="code2" >
                                 刷新Token
                                 <p>Method: <span th:text="${refresh_token_url.method}">Sebastian</span></p>
                                 <p>Uri: <span th:text="${refresh_token_url.uri}">Pepper</span></p>
-                                注意:
-                                还需要将旧有的token以 bearer的方式填写到请求头中
+                                <p>
+                                    注意:
+                                    还需要将旧有的token以 bearer的方式填写到请求头中
+                                </p>
                                 ---------------------------------------------------------------------------
                             </h5>
                         </div>
