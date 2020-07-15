@@ -2,7 +2,7 @@ server:
   port: 7090
   servlet:
     session:
-      timeout: P1D
+      timeout: PT12H
 
 logging:
   level:

@@ -119,6 +119,8 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 .deleteCookies("JSESSIONID");
 
 
+        //跨域,使用org.springframework.security.oauth.samples.custom.filter.CustomCorsFilter进行控制
+        http.cors();
         http.csrf().disable();
     }
     // @formatter:on
