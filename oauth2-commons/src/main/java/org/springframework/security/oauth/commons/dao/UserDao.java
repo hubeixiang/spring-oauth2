@@ -54,7 +54,7 @@ public class UserDao {
         if (secUser == null) {
             throw new UsernameNotFoundException("username is not exists!");
         }
-        secUser.setPassword(secUser.prefixPassword() + secUser.getPassword());
+//        secUser.setPassword(secUser.prefixPassword() + secUser.getPassword());
         return secUser;
     }
 }

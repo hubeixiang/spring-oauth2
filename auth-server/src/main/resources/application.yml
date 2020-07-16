@@ -13,9 +13,9 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:mysql://192.168.1.21:3306/rmdb?useSSL=false&characterEncoding=UTF-8
-    username: rmdb
-    password: rmdb
+    url: jdbc:mysql://192.168.1.21:3306/irdb?useSSL=false&characterEncoding=UTF-8
+    username: irsoft
+    password: irsoft
     driver-class-name: com.mysql.jdbc.Driver
     max-idle: 5
     max-wait: 10000
@@ -24,3 +24,9 @@ spring:
     validation-query: SELECT 1
     time-between-eviction-runs-millis: 18800
     jdbc-interceptors: ConnectionState;SlowQueryReport(threshold=50)
+
+security:
+  authn:
+    data:
+      password-encoder:
+        type: bss

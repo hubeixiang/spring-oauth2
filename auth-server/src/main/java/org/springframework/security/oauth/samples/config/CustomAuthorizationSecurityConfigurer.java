@@ -20,14 +20,15 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.RsaSigner;
 import org.springframework.security.jwt.crypto.sign.RsaVerifier;
+import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.JsonParser;
 import org.springframework.security.oauth2.common.util.JsonParserFactory;
@@ -68,10 +69,15 @@ public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerCo
     @Autowired
     private DataSource dataSource;
 
+    @Value("${security.authn.data.password-encoder.type}")
+    private String passwordEncoderType;
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // @formatter:off
-        clients.jdbc(dataSource).passwordEncoder(passwordEncoder());
+        clients.jdbc(dataSource)
+                //配置用户密码的加密方式
+                .passwordEncoder(passwordEncoder());
         // @formatter:on
     }
 
@@ -86,7 +92,7 @@ public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerCo
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return CustomPasswordEncoderFactories.getInstance().getPasswordEncoder(passwordEncoderType);
     }
 
     @Bean
