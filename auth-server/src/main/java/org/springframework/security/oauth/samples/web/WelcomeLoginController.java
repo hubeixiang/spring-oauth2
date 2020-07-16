@@ -4,6 +4,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
 import org.springframework.security.oauth.samples.web.url.AuthorizationCodeUrl;
+import org.springframework.security.oauth.samples.web.url.CheckTokenUri;
 import org.springframework.security.oauth.samples.web.url.ClientCredentialsUrl;
 import org.springframework.security.oauth.samples.web.url.ImplicitUrl;
 import org.springframework.security.oauth.samples.web.url.RSAUtils;
@@ -115,6 +116,9 @@ public class WelcomeLoginController {
         //refresh token
         RefreshTokenUri refreshTokenUri = new RefreshTokenUri(httpPath, contextPath);
         model.addAttribute("refresh_token_url", refreshTokenUri.getMyUrl());
+        //check token
+        CheckTokenUri checkTokenUri = new CheckTokenUri(httpPath, contextPath);
+        model.addAttribute("check_token_url", checkTokenUri.getMyUrl());
     }
 
     private void appendUserName(Model model) {
