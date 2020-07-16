@@ -2,9 +2,11 @@ package org.springframework.security.oauth.samples.web;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth.samples.cache.RedisUtil;
 import org.springframework.security.oauth.samples.web.url.AuthorizationCodeUrl;
 import org.springframework.security.oauth.samples.web.url.ClientCredentialsUrl;
 import org.springframework.security.oauth.samples.web.url.ImplicitUrl;
+import org.springframework.security.oauth.samples.web.url.RSAUtils;
 import org.springframework.security.oauth.samples.web.url.RefreshTokenUri;
 import org.springframework.security.oauth.samples.web.url.ResourceOwnerPasswordCredentialsUrl;
 import org.springframework.security.web.WebAttributes;
@@ -18,6 +20,7 @@ import org.thymeleaf.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 @Controller
 public class WelcomeLoginController {
@@ -53,6 +56,25 @@ public class WelcomeLoginController {
     @GetMapping("/login")
     public String login(Model model) {
         appendUserName(model);
+        try {
+            //生成密钥对(公钥和私钥)
+            Map<String, Object> msd = RSAUtils.genKeyPair();
+            //获取私钥
+            String privatekey = RSAUtils.getPrivateKey(msd);
+            //获取公钥
+            String publickey = RSAUtils.getPublicKey(msd);
+            //把密钥对存入缓存
+            //RedisUtil redis = new RedisUtil();
+            //RedisUtil.set(publickey,privatekey);
+            if (!RedisUtil.exists(RSAUtils.CACHE_KEY_PREFIX + publickey)) {
+                RedisUtil.set(RSAUtils.CACHE_KEY_PREFIX + publickey, privatekey);
+            }
+            //request.getSession().setAttribute(publickey,privatekey);
+            //传输公钥给前端用户
+            model.addAttribute(RSAUtils.WEB_HTML_ID_KEY, publickey);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "login";
     }
 

@@ -69,15 +69,14 @@ public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerCo
     @Autowired
     private DataSource dataSource;
 
-    @Value("${security.authn.data.password-encoder.type}")
-    private String passwordEncoderType;
+
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // @formatter:off
-        clients.jdbc(dataSource)
-                //配置用户密码的加密方式
-                .passwordEncoder(passwordEncoder());
+        clients.jdbc(dataSource);
+                //配置客户端查询时用户密码的加密方式,不配置时默认使用NoOpPasswordEncoder
+//                .passwordEncoder(passwordEncoder());
         // @formatter:on
     }
 
@@ -88,11 +87,6 @@ public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerCo
                 .tokenStore(tokenStore())
                 .userApprovalHandler(userApprovalHandler())
                 .accessTokenConverter(accessTokenConverter());
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return CustomPasswordEncoderFactories.getInstance().getPasswordEncoder(passwordEncoderType);
     }
 
     @Bean

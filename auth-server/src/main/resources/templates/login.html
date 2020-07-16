@@ -26,12 +26,26 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" class="form-control">
+                <input hidden type="publickey" id="publickey" name="publickey" th:value="${publickey}"/>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Log in</button>
+        <button type="submit" class="btn btn-primary" onclick="jsencryptEncoder()">Log in</button>
     </form>
 </div>
 <script src="/webjars/jquery/jquery.min.js" th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script src="/webjars/jsencrypt/bin/jsencrypt.min.js" th:src="@{/webjars/jsencrypt/bin/jsencrypt.min.js}"></script>
+<!--<script src="../static/js/vendor/jsencrypt/jsencrypt.min.js"></script>-->
+<script type="text/javascript">
+    // $("#publickey").display = true;
+
+    function jsencryptEncoder() {
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey($("#publickey").val());
+        var password = $("#password").val();
+
+        $("#password").val(encrypt.encrypt("" + password));
+    }
+</script>
 </body>
 </html>

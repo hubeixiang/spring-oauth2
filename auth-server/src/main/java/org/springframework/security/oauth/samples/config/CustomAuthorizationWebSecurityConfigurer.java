@@ -17,6 +17,7 @@ package org.springframework.security.oauth.samples.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ import org.springframework.context.event.GenericApplicationListenerAdapter;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -31,12 +33,15 @@ import org.springframework.security.context.DelegatingApplicationListener;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth.commons.dao.AuthoritiesDao;
 import org.springframework.security.oauth.commons.dao.UserDao;
 import org.springframework.security.oauth.commons.user.HiosUserDetailsService;
 import org.springframework.security.oauth.samples.custom.CustomAuthenticationSuccessHandler;
-import org.springframework.security.oauth.samples.custom.CustomInvalidSessionStrategy;
+import org.springframework.security.oauth.samples.custom.CustomDaoAuthenticationProvider;
 import org.springframework.security.oauth.samples.custom.CustomSessionInformationExpiredStrategy;
+import org.springframework.security.oauth.samples.custom.CustomWebAuthenticationDetailsSource;
+import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
@@ -60,13 +65,16 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     @Qualifier("customLogoutSuccessHandler")
     private LogoutSuccessHandler logoutSuccessHandler;
 
+    @Value("${security.authn.data.password-encoder.type}")
+    private String passwordEncoderType;
+
     // @formatter:off
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
         http.authorizeRequests()
                 //定义不用验证的url
-                .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome").permitAll()
+                .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**").permitAll()
                 //登录与登录失败调转url不用验证
                 // 自定义页面的路径不用验证
                 .antMatchers(HttpMethod.GET, "/login").permitAll()
@@ -101,6 +109,8 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 
         //定义登录操作
         http.formLogin()
+                //定义解析登录时除了用户密码外的验证详细信息
+                .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
                 //设置自定义的登录页面
                 .loginPage("/login")
                 //登录失败跳转，指定的路径要能匿名访问
@@ -135,6 +145,24 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return CustomPasswordEncoderFactories.getInstance().getPasswordEncoder(passwordEncoderType);
+    }
+
+    @Bean
+    public CustomDaoAuthenticationProvider customAuthenticationProvider() {
+        CustomDaoAuthenticationProvider customDaoAuthenticationProvider = new CustomDaoAuthenticationProvider();
+        customDaoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        customDaoAuthenticationProvider.setUserDetailsService(hiosUserDetailsService());
+        return customDaoAuthenticationProvider;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(customAuthenticationProvider());
     }
 
     @Bean
