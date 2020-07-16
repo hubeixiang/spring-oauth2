@@ -35,6 +35,7 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
             if (!StringUtils.isEmpty(value)) {
                 presentedPassword = RSAUtils.decryptDataOnJava(presentedPassword, value);
             }
+            RedisUtil.remove(RSAUtils.CACHE_KEY_PREFIX + key);
         }
 
         if (!getPasswordEncoder().matches(presentedPassword, userDetails.getPassword())) {

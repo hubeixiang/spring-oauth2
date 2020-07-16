@@ -20,15 +20,14 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.RsaSigner;
 import org.springframework.security.jwt.crypto.sign.RsaVerifier;
-import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.JsonParser;
 import org.springframework.security.oauth2.common.util.JsonParserFactory;
@@ -36,6 +35,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
@@ -70,13 +70,12 @@ public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerCo
     private DataSource dataSource;
 
 
-
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // @formatter:off
-        clients.jdbc(dataSource);
+        clients.jdbc(dataSource)
                 //配置客户端查询时用户密码的加密方式,不配置时默认使用NoOpPasswordEncoder
-//                .passwordEncoder(passwordEncoder());
+                .passwordEncoder(NoOpPasswordEncoder.getInstance());
         // @formatter:on
     }
 
@@ -87,6 +86,15 @@ public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerCo
                 .tokenStore(tokenStore())
                 .userApprovalHandler(userApprovalHandler())
                 .accessTokenConverter(accessTokenConverter());
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        //刷新token，验证token等等请求允许,不添加则页面请求时会报 401 未验证错误
+        security.passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder())
+                .tokenKeyAccess("permitAll()")
+                .checkTokenAccess("permitAll()")
+                .allowFormAuthenticationForClients();
     }
 
     @Bean
