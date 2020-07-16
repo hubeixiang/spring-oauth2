@@ -132,10 +132,24 @@
                     <div>
                         <div>
                             <h5 class="code2" >
-                                刷新Token
+                                检查Token
                                 <p>Method: <span th:text="${check_token_url.method}">Sebastian</span></p>
                                 <p>Uri: <span th:text="${check_token_url.uri}">Pepper</span></p>
                                 ---------------------------------------------------------------------------
+                                <p>
+                                    注意返回值:
+                                    {
+                                    "active": true,
+                                    "exp": 1594942000,
+                                    "user_name": "admin",
+                                    "jti": "c9889c07-2659-43cc-9029-e7324f68455d",
+                                    "client_id": "bss-embed-white",
+                                    "scope": [
+                                    "message.read",
+                                    "message.write"
+                                    ]
+                                    }
+                                </p>
                             </h5>
                         </div>
                     </div>
