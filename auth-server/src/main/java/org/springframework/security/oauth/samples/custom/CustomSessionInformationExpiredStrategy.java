@@ -1,5 +1,6 @@
 package org.springframework.security.oauth.samples.custom;
 
+import org.framework.hsven.i18n.I18nMessageUtil;
 import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 
@@ -13,10 +14,16 @@ import java.io.IOException;
  * event里封装了request、response信息
  */
 public class CustomSessionInformationExpiredStrategy implements SessionInformationExpiredStrategy {
+
     @Override
     public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
         HttpServletResponse response = event.getResponse();
         response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write("当前用户已在其他地方登录...");
+        String message = I18nMessageUtil.getInstance().getMessage("CustomSessionInformationExpiredStrategy.onExpiredSessionDetected");
+        response.getWriter().write(message);
     }
+
+//    protected Locale getDefaultLocale() {
+//        return (this.defaultLocale != null ? this.defaultLocale : LocaleContextHolder.getLocale());
+//    }
 }

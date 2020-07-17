@@ -49,7 +49,7 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- -->
+        <!-- webjars -->
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator-core</artifactId>
@@ -68,6 +68,14 @@
             <groupId>org.webjars.bower</groupId>
             <artifactId>jsencrypt</artifactId>
             <version>2.3.0</version>
+        </dependency>
+
+
+        <!-- i18n message -->
+        <dependency>
+            <groupId>org.framework.hsven</groupId>
+            <artifactId>hsven-commons-i18n</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

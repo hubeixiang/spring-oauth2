@@ -20,9 +20,11 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.jwt.JwtHelper;
@@ -61,6 +63,10 @@ import java.util.Map;
 public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
+    @Qualifier("hiosUserDetailsService")
+    UserDetailsService userDetailsService;
+
+    @Autowired
     private ClientDetailsService clientDetailsService;
 
     @Autowired
@@ -83,6 +89,8 @@ public class CustomAuthorizationSecurityConfigurer extends AuthorizationServerCo
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .authenticationManager(this.authenticationManager)
+                //oauth认证服务刷新token时使用的用户认证
+                .userDetailsService(userDetailsService)
                 .tokenStore(tokenStore())
                 .userApprovalHandler(userApprovalHandler())
                 .accessTokenConverter(accessTokenConverter());

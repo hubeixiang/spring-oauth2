@@ -12,6 +12,8 @@ logging:
     org.springframework.security.oauth2: DEBUG
 
 spring:
+  messages:
+    basename: messages,i18n/messages
   datasource:
     url: jdbc:mysql://192.168.1.21:3306/irdb?useSSL=false&characterEncoding=UTF-8
     username: irsoft
@@ -30,3 +32,4 @@ security:
     data:
       password-encoder:
         type: bss
+
