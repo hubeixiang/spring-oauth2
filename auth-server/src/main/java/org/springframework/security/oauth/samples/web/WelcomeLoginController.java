@@ -109,6 +109,7 @@ public class WelcomeLoginController {
         //implicit
         ImplicitUrl implicitUrl = new ImplicitUrl(httpPath, contextPath, redirect);
         model.addAttribute("implicit_token_url", implicitUrl.getMyUrl());
+        model.addAttribute("spec_implicit_token_url", implicitUrl.getSpecUrl());
         //password
         String userName = getUserName();
         ResourceOwnerPasswordCredentialsUrl passwordCredentialsUrl = new ResourceOwnerPasswordCredentialsUrl(httpPath, contextPath, redirect, userName);

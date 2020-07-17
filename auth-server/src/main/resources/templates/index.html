@@ -55,7 +55,7 @@
                     </div>
 
                     <div>
-                        <h5 class="code1-2" >
+                        <h5 class="code1-2">
                             获取Token
                             <p>Method: <span th:text="${authorizationCode_code_token_url.method}">Sebastian</span></p>
                             <p>Uri: <span th:text="${authorizationCode_code_token_url.uri}">Pepper</span></p>
@@ -69,11 +69,16 @@
                 <div>
                     <h4 class="panel-title-code">Implicit</h4>
                     <div>
-                        <h5 class="code2" >
+                        <h5 class="code2">
                             获取Token
                             <p>Method: <span th:text="${implicit_token_url.method}">Sebastian</span></p>
                             <p>Uri: <span th:text="${implicit_token_url.uri}">Pepper</span></p>
                             ---------------------------------------------------------------------------
+                            <p>自定义的隐式授权URL:返回的页面url增加了refresh_token的获取,以适配token刷新</p>
+                            <p>Method: <span th:text="${spec_implicit_token_url.method}">Sebastian</span></p>
+                            <p>Uri: <span th:text="${spec_implicit_token_url.uri}">Pepper</span></p>
+                            ---------------------------------------------------------------------------
+                        </h5>
                         </h5>
                     </div>
                 </div>
@@ -82,7 +87,7 @@
                 <div>
                     <h4 class="panel-title-code">Client Credentials</h4>
                     <div>
-                        <h5 class="code2" >
+                        <h5 class="code2">
                             获取Token
                             <p>Method: <span th:text="${client_credentials_token_url.method}">Sebastian</span></p>
                             <p>Uri: <span th:text="${client_credentials_token_url.uri}">Pepper</span></p>
@@ -96,7 +101,7 @@
                     <h4 class="panel-title-code">Resource Owner Password Credentials</h4>
                     <div>
                         <div>
-                            <h5 class="code2" >
+                            <h5 class="code2">
                                 获取Token
                                 <p>Method: <span th:text="${password_token_url.method}">Sebastian</span></p>
                                 <p>Uri: <span th:text="${password_token_url.uri}">Pepper</span></p>
@@ -111,7 +116,7 @@
                     <h4 class="panel-title-code">Token Refresh</h4>
                     <div>
                         <div>
-                            <h5 class="code2" >
+                            <h5 class="code2">
                                 刷新Token
                                 <p>Method: <span th:text="${refresh_token_url.method}">Sebastian</span></p>
                                 <p>Uri: <span th:text="${refresh_token_url.uri}">Pepper</span></p>
@@ -131,7 +136,7 @@
                     <h4 class="panel-title-code">Token check_token</h4>
                     <div>
                         <div>
-                            <h5 class="code2" >
+                            <h5 class="code2">
                                 检查Token
                                 <p>Method: <span th:text="${check_token_url.method}">Sebastian</span></p>
                                 <p>Uri: <span th:text="${check_token_url.uri}">Pepper</span></p>
