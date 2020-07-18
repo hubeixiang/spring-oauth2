@@ -1,12 +1,12 @@
 package org.springframework.security.oauth.samples.custom;
 
-import org.springframework.security.oauth.samples.web.url.RSAUtils;
+import org.springframework.security.oauth.samples.web.util.RSAUtils;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 页面请求的的参数中包含了公钥信息
+ * 页面请求的的参数中包含了公钥信息,以及验证图片记录
  */
 public class CustomWebAuthenticationDetails extends WebAuthenticationDetails {
     private String publickeyValue = null;

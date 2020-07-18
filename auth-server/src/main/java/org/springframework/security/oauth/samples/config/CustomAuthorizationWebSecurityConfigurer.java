@@ -41,7 +41,9 @@ import org.springframework.security.oauth.samples.custom.CustomAuthenticationSuc
 import org.springframework.security.oauth.samples.custom.CustomDaoAuthenticationProvider;
 import org.springframework.security.oauth.samples.custom.CustomSessionInformationExpiredStrategy;
 import org.springframework.security.oauth.samples.custom.CustomWebAuthenticationDetailsSource;
+import org.springframework.security.oauth.samples.custom.filter.VerifyCodeFilter;
 import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
@@ -62,6 +64,9 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     private ApplicationContext applicationContext;
 
     @Autowired
+    private VerifyCodeFilter validateCodeFilter;
+
+    @Autowired
     @Qualifier("customLogoutSuccessHandler")
     private LogoutSuccessHandler logoutSuccessHandler;
 
@@ -74,7 +79,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
         http.headers().frameOptions().disable();
         http.authorizeRequests()
                 //定义不用验证的url
-                .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**").permitAll()
+                .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/vercode").permitAll()
                 //登录与登录失败调转url不用验证
                 // 自定义页面的路径不用验证
                 .antMatchers(HttpMethod.GET, "/login").permitAll()
@@ -82,7 +87,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 .antMatchers(HttpMethod.GET, "/login-error").permitAll()
                 .anyRequest().authenticated();
 
-//        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加验证码校验过滤器
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加验证码校验过滤器
 //        http.addFilterBefore(smsCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加短信验证码校验过滤器
 //        http.apply(smsAuthenticationConfig);// 将短信验证码认证配置加到 Spring Security 中
 

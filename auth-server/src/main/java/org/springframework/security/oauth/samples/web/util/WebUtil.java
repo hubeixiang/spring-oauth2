@@ -16,7 +16,7 @@
  *
  */
 
-package org.springframework.security.oauth.samples.web;
+package org.springframework.security.oauth.samples.web.util;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;

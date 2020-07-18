@@ -1,6 +1,6 @@
 package org.springframework.security.oauth.samples.custom;
 
-import org.springframework.security.oauth.samples.web.url.RSAUtils;
+import org.springframework.security.oauth.samples.web.util.RSAUtils;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.thymeleaf.util.StringUtils;

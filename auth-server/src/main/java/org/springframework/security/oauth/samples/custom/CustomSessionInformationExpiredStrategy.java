@@ -19,7 +19,7 @@ public class CustomSessionInformationExpiredStrategy implements SessionInformati
     public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
         HttpServletResponse response = event.getResponse();
         response.setContentType("application/json;charset=UTF-8");
-        String message = I18nMessageUtil.getInstance().getMessage("CustomSessionInformationExpiredStrategy.onExpiredSessionDetected");
+        String message = I18nMessageUtil.getInstance().getRequestMessage("CustomSessionInformationExpiredStrategy.onExpiredSessionDetected");
         response.getWriter().write(message);
     }
 

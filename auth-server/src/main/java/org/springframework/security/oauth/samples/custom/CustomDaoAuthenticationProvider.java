@@ -6,7 +6,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
-import org.springframework.security.oauth.samples.web.url.RSAUtils;
+import org.springframework.security.oauth.samples.web.util.RSAUtils;
 import org.springframework.util.StringUtils;
 
 /**

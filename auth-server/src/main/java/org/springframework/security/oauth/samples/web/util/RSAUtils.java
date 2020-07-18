@@ -1,4 +1,4 @@
-package org.springframework.security.oauth.samples.web.url;
+package org.springframework.security.oauth.samples.web.util;
 
 import org.apache.commons.codec.binary.Base64;
 

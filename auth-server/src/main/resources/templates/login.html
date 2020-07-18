@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <title>Spring Security OAuth 2.0 Authorization Server Sample</title>
+    <title th:if="${page_title}" th:text="${page_title}">Spring Security OAuth 2.0 Authorization Server Sample</title>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -10,32 +10,38 @@
 </head>
 <body>
 <div class="container">
-    <h1>Login</h1>
+    <h1 th:if="${header_title}" th:text="${header_title}">Login</h1>
     <p th:if="${loginError}" style="font-weight:bold;color:red;">
     <td th:text="${errorInfo}">${errorInfo}</td>
     </p>
     <form th:action="@{/login}" method="post">
         <div class="form-row">
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username" th:if="${box_Username}" th:text="${box_Username}">Username</label>
                 <input type="text" id="username" name="username" autofocus="autofocus" class="form-control">
                 <small class="form-text text-muted">user1 / password</small>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password" th:if="${box_Password}" th:text="${box_Password}">Password</label>
                 <input type="password" id="password" name="password" class="form-control">
                 <input hidden type="publickey" id="publickey" name="publickey" th:value="${publickey}"/>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary" onclick="jsencryptEncoder()">Log in</button>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="verifyCode" th:if="${box_verifyCode}" th:text="${box_verifyCode}">Verification Code</label>
+                <input type="verifyCode" id="verifyCode" name="verifyCode" class="form-control">
+                <img src="/vercode" alt="">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="jsencryptEncoder()" th:if="${submit_tip}" th:text="${submit_tip}">Log in</button>
     </form>
 </div>
 <script src="/webjars/jquery/jquery.min.js" th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 <script src="/webjars/jsencrypt/bin/jsencrypt.min.js" th:src="@{/webjars/jsencrypt/bin/jsencrypt.min.js}"></script>
-<!--<script src="../static/js/vendor/jsencrypt/jsencrypt.min.js"></script>-->
 <script type="text/javascript">
     // $("#publickey").display = true;
 
