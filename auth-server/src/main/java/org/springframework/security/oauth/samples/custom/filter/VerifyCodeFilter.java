@@ -42,6 +42,7 @@ public class VerifyCodeFilter extends GenericFilterBean {
                 if (StringUtils.isEmpty(requestCaptcha))
                     throw new AuthenticationServiceException(getMessage("WelcomeLoginController.verifyCode_notEmpty"));
                 String genCaptcha = RedisUtil.get(VerifyCodeUtil.CACHE_KEY_PREFIX + requestCaptcha.toLowerCase());
+                RedisUtil.remove(VerifyCodeUtil.CACHE_KEY_PREFIX + requestCaptcha.toLowerCase());
                 if (StringUtils.isEmpty(genCaptcha) || !genCaptcha.toLowerCase().equals(requestCaptcha.toLowerCase())) {
                     throw new AuthenticationServiceException(getMessage("WelcomeLoginController.verifyCode_ERROR"));
                 }
