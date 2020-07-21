@@ -14,13 +14,13 @@ import java.sql.SQLException;
 
 @Service
 public class UserDao {
-    private final static String user_sql = "select * from sec_user where user_name= '%s'";
+    private final static String user_sql = "select * from sec_user where user_name= '%s' || login_id = '%s'";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        SecUser secUser = jdbcTemplate.query(String.format(user_sql, username), new ResultSetExtractor<SecUser>() {
+        SecUser secUser = jdbcTemplate.query(String.format(user_sql, username, username), new ResultSetExtractor<SecUser>() {
             @Override
             public SecUser extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs != null && rs.next()) {

@@ -85,6 +85,9 @@ public class WelcomeLoginController {
         model.addAttribute("messages", messages);
         appendUserName(model);
         appendOauthUrl(model, request);
+        String tips = getMessage("WelcomeLoginController.online_user_tips");
+        int count = onlineUsers();
+        model.addAttribute("online_user_tips", String.format("%s(%s)", tips, count));
         return "index";
     }
 
@@ -222,6 +225,7 @@ public class WelcomeLoginController {
         model.addAttribute("box_Password", getMessage("WelcomeLoginController.box_Password"));
         model.addAttribute("box_verifyCode", getMessage("WelcomeLoginController.box_verifyCode"));
         model.addAttribute("submit_tip", getMessage("WelcomeLoginController.submit_tip"));
+        model.addAttribute("online_user_tips", getMessage("WelcomeLoginController.online_user_tips"));
     }
 
     private String getMessage(String code) {
