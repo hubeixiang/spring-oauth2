@@ -3,6 +3,7 @@ package org.springframework.security.oauth.samples.custom.filter;
 import org.framework.hsven.i18n.I18nMessageUtil;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
 import org.springframework.security.oauth.samples.web.util.VerifyCodeUtil;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -41,10 +42,13 @@ public class VerifyCodeFilter extends GenericFilterBean {
                 String requestCaptcha = request.getParameter(VerifyCodeUtil.WEB_HTML_ID_KEY);
                 if (StringUtils.isEmpty(requestCaptcha))
                     throw new AuthenticationServiceException(getMessage("WelcomeLoginController.verifyCode_notEmpty"));
-                String genCaptcha = RedisUtil.get(VerifyCodeUtil.CACHE_KEY_PREFIX + requestCaptcha.toLowerCase());
+                StringCacheEntity genCaptcha = RedisUtil.getString(VerifyCodeUtil.CACHE_KEY_PREFIX + requestCaptcha.toLowerCase());
                 RedisUtil.remove(VerifyCodeUtil.CACHE_KEY_PREFIX + requestCaptcha.toLowerCase());
-                if (StringUtils.isEmpty(genCaptcha) || !genCaptcha.toLowerCase().equals(requestCaptcha.toLowerCase())) {
+                if (genCaptcha == null || StringUtils.isEmpty(genCaptcha.getCacheValue()) || !genCaptcha.getCacheValue().toLowerCase().equals(requestCaptcha.toLowerCase())) {
                     throw new AuthenticationServiceException(getMessage("WelcomeLoginController.verifyCode_ERROR"));
+                }
+                if (genCaptcha.isExpired()) {
+                    throw new AuthenticationServiceException(getMessage("WelcomeLoginController.verifyCode_timeout_ERROR"));
                 }
             } catch (AuthenticationException e) {
                 simpleUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);

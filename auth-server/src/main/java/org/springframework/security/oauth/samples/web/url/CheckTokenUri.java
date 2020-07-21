@@ -1,5 +1,6 @@
 package org.springframework.security.oauth.samples.web.url;
 
+import org.springframework.security.oauth.samples.configproperties.OauthClient;
 import org.springframework.util.StringUtils;
 
 public class CheckTokenUri {
@@ -9,7 +10,10 @@ public class CheckTokenUri {
     private CredentialsEntity cre = new CredentialsEntity();
     private MyUrl myUrl;
 
-    public CheckTokenUri(String httpPath, String contextPath) {
+    public CheckTokenUri(OauthClient oauthClient, String httpPath, String contextPath) {
+        cre.setClientId(oauthClient.getClientId());
+        cre.setClientSecret(oauthClient.getClientSecret());
+        cre.setScope(oauthClient.getClientScope());
         this.httpPath = httpPath;
         this.contextPath = contextPath;
         stmyUrl();

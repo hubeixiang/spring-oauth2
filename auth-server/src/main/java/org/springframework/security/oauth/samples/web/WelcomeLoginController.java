@@ -9,6 +9,8 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
+import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
+import org.springframework.security.oauth.samples.configproperties.OauthClient;
 import org.springframework.security.oauth.samples.web.url.AuthorizationCodeUrl;
 import org.springframework.security.oauth.samples.web.url.CheckTokenUri;
 import org.springframework.security.oauth.samples.web.url.ClientCredentialsUrl;
@@ -43,6 +45,9 @@ import java.util.Map;
 public class WelcomeLoginController {
     @Autowired
     private SessionRegistry sessionRegistry;
+
+    @Autowired
+    private LoginConfigProperties loginConfigProperties;
 
     private VerifyCodeUtil vc = new VerifyCodeUtil();
 
@@ -93,7 +98,7 @@ public class WelcomeLoginController {
 
     @GetMapping("/vercode")
     public void code(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        VerifyCodeInfo verifyCodeInfo = vc.createVerifyCodeInfo();
+        VerifyCodeInfo verifyCodeInfo = vc.createVerifyCodeInfo(loginConfigProperties.getCaptcha().getTimeout());
         HttpSession session = req.getSession();
         session.setAttribute(VerifyCodeUtil.WEB_HTML_ID_KEY, verifyCodeInfo.getVerifyCode());
         VerifyCodeUtil.output(verifyCodeInfo.getBufferedImage(), resp.getOutputStream());
@@ -102,24 +107,26 @@ public class WelcomeLoginController {
     @GetMapping("/login")
     public String login(Model model) {
         appendUserName(model);
-        try {
-            //生成密钥对(公钥和私钥)
-            Map<String, Object> msd = RSAUtils.genKeyPair();
-            //获取私钥
-            String privatekey = RSAUtils.getPrivateKey(msd);
-            //获取公钥
-            String publickey = RSAUtils.getPublicKey(msd);
-            //把密钥对存入缓存
-            //RedisUtil redis = new RedisUtil();
-            //RedisUtil.set(publickey,privatekey);
-            if (!RedisUtil.exists(RSAUtils.CACHE_KEY_PREFIX + publickey)) {
-                RedisUtil.set(RSAUtils.CACHE_KEY_PREFIX + publickey, privatekey);
+        if (loginConfigProperties.getPassword().isJsencrypt()) {
+            try {
+                //生成密钥对(公钥和私钥)
+                Map<String, Object> msd = RSAUtils.genKeyPair();
+                //获取私钥
+                String privatekey = RSAUtils.getPrivateKey(msd);
+                //获取公钥
+                String publickey = RSAUtils.getPublicKey(msd);
+                //把密钥对存入缓存
+                //RedisUtil redis = new RedisUtil();
+                //RedisUtil.set(publickey,privatekey);
+                if (!RedisUtil.exists(RSAUtils.CACHE_KEY_PREFIX + publickey)) {
+                    RedisUtil.setString(RSAUtils.CACHE_KEY_PREFIX + publickey, privatekey);
+                }
+                //request.getSession().setAttribute(publickey,privatekey);
+                //传输公钥给前端用户
+                model.addAttribute(RSAUtils.WEB_HTML_ID_KEY, publickey);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            //request.getSession().setAttribute(publickey,privatekey);
-            //传输公钥给前端用户
-            model.addAttribute(RSAUtils.WEB_HTML_ID_KEY, publickey);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         appendLoginTips(model);
         return "login";
@@ -149,26 +156,43 @@ public class WelcomeLoginController {
         String redirect = String.format("%s/%s", httpPath, "index");
         String state = "xyzabcn";
         String contextPath = null;
+        String clientId = System.getProperty("clientId", null);
+        String clientSecret = System.getProperty("clientSecret", null);
+        String scope = System.getProperty("clientScope", null);
+        OauthClient defaultOauthClient = loginConfigProperties.getOauthClient();
+        if (StringUtils.isEmpty(clientId)) {
+            clientId = defaultOauthClient.getClientId();
+        }
+        if (StringUtils.isEmpty(clientSecret)) {
+            clientSecret = defaultOauthClient.getClientSecret();
+        }
+        if (StringUtils.isEmpty(scope)) {
+            scope = defaultOauthClient.getClientScope();
+        }
+        OauthClient oauthClient = new OauthClient();
+        oauthClient.setClientId(clientId);
+        oauthClient.setClientSecret(clientSecret);
+        oauthClient.setClientScope(scope);
         //authorizationCode
-        AuthorizationCodeUrl authorizationCodeUrl = new AuthorizationCodeUrl(httpPath, contextPath, redirect, state);
+        AuthorizationCodeUrl authorizationCodeUrl = new AuthorizationCodeUrl(oauthClient, httpPath, contextPath, redirect, state);
         model.addAttribute("authorizationCode_code_url", authorizationCodeUrl.getCodeMyUrl());
         model.addAttribute("authorizationCode_code_token_url", authorizationCodeUrl.getTokenMyUrl());
         //client credentials
-        ClientCredentialsUrl clientCredentialsUrl = new ClientCredentialsUrl(httpPath, contextPath, redirect);
+        ClientCredentialsUrl clientCredentialsUrl = new ClientCredentialsUrl(oauthClient, httpPath, contextPath, redirect);
         model.addAttribute("client_credentials_token_url", clientCredentialsUrl.getMyUrl());
         //implicit
-        ImplicitUrl implicitUrl = new ImplicitUrl(httpPath, contextPath, redirect);
+        ImplicitUrl implicitUrl = new ImplicitUrl(oauthClient, httpPath, contextPath, redirect);
         model.addAttribute("implicit_token_url", implicitUrl.getMyUrl());
         model.addAttribute("spec_implicit_token_url", implicitUrl.getSpecUrl());
         //password
         String userName = getUserName();
-        ResourceOwnerPasswordCredentialsUrl passwordCredentialsUrl = new ResourceOwnerPasswordCredentialsUrl(httpPath, contextPath, redirect, userName);
+        ResourceOwnerPasswordCredentialsUrl passwordCredentialsUrl = new ResourceOwnerPasswordCredentialsUrl(oauthClient, httpPath, contextPath, redirect, userName);
         model.addAttribute("password_token_url", passwordCredentialsUrl.getMyUrl());
         //refresh token
-        RefreshTokenUri refreshTokenUri = new RefreshTokenUri(httpPath, contextPath);
+        RefreshTokenUri refreshTokenUri = new RefreshTokenUri(oauthClient, httpPath, contextPath);
         model.addAttribute("refresh_token_url", refreshTokenUri.getMyUrl());
         //check token
-        CheckTokenUri checkTokenUri = new CheckTokenUri(httpPath, contextPath);
+        CheckTokenUri checkTokenUri = new CheckTokenUri(oauthClient, httpPath, contextPath);
         model.addAttribute("check_token_url", checkTokenUri.getMyUrl());
     }
 

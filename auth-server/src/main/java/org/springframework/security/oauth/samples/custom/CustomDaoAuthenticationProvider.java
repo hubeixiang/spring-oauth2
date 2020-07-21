@@ -5,6 +5,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
 import org.springframework.security.oauth.samples.web.util.RSAUtils;
 import org.springframework.util.StringUtils;
@@ -31,9 +32,9 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
             //如果details不为空,并且是自定义web验证对象,表明密码需要用公钥进行解密
             CustomWebAuthenticationDetails customWebAuthenticationDetails = (CustomWebAuthenticationDetails) details;
             String key = ((CustomWebAuthenticationDetails) details).getPublickeyValue();
-            String value = RedisUtil.get(RSAUtils.CACHE_KEY_PREFIX + key);
-            if (!StringUtils.isEmpty(value)) {
-                presentedPassword = RSAUtils.decryptDataOnJava(presentedPassword, value);
+            StringCacheEntity value = RedisUtil.getString(RSAUtils.CACHE_KEY_PREFIX + key);
+            if (value != null && !StringUtils.isEmpty(value.getCacheValue())) {
+                presentedPassword = RSAUtils.decryptDataOnJava(presentedPassword, value.getCacheValue());
             }
             RedisUtil.remove(RSAUtils.CACHE_KEY_PREFIX + key);
         }

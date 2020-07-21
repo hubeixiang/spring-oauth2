@@ -27,9 +27,14 @@ spring:
     time-between-eviction-runs-millis: 18800
     jdbc-interceptors: ConnectionState;SlowQueryReport(threshold=50)
 
-security:
-  authn:
-    data:
-      password-encoder:
-        type: bss
-
+login:
+  oauthClient:
+    clientId: bss-embed-white
+    clientSecret: secret
+    clientScope: message.read,message.write
+  password:
+    jsencrypt: true
+    encoder:
+      type: bss
+  captcha:
+    timeout: 300

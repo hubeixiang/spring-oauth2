@@ -21,6 +21,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.sven.security.oauth2</groupId>
+            <artifactId>oauth2-cache-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -77,6 +82,7 @@
             <artifactId>hsven-commons-i18n</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+
     </dependencies>
 
     <build>

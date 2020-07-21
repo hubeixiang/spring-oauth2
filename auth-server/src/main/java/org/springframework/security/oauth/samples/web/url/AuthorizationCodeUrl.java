@@ -1,5 +1,6 @@
 package org.springframework.security.oauth.samples.web.url;
 
+import org.springframework.security.oauth.samples.configproperties.OauthClient;
 import org.springframework.util.StringUtils;
 
 public class AuthorizationCodeUrl {
@@ -15,7 +16,10 @@ public class AuthorizationCodeUrl {
     private MyUrl codeMyUrl;
     private MyUrl tokenMyUrl;
 
-    public AuthorizationCodeUrl(String httpPath, String contextPath, String redirect, String state) {
+    public AuthorizationCodeUrl(OauthClient oauthClient, String httpPath, String contextPath, String redirect, String state) {
+        cre.setClientId(oauthClient.getClientId());
+        cre.setClientSecret(oauthClient.getClientSecret());
+        cre.setScope(oauthClient.getClientScope());
         this.httpPath = httpPath;
         this.contextPath = contextPath;
         this.redirect = redirect;

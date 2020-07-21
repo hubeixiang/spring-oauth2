@@ -37,6 +37,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth.commons.dao.AuthoritiesDao;
 import org.springframework.security.oauth.commons.dao.UserDao;
 import org.springframework.security.oauth.commons.user.HiosUserDetailsService;
+import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.custom.CustomAuthenticationSuccessHandler;
 import org.springframework.security.oauth.samples.custom.CustomDaoAuthenticationProvider;
 import org.springframework.security.oauth.samples.custom.CustomSessionInformationExpiredStrategy;
@@ -70,8 +71,8 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     @Qualifier("customLogoutSuccessHandler")
     private LogoutSuccessHandler logoutSuccessHandler;
 
-    @Value("${security.authn.data.password-encoder.type}")
-    private String passwordEncoderType;
+    @Autowired
+    private LoginConfigProperties loginConfigProperties;
 
     // @formatter:off
     @Override
@@ -154,7 +155,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return CustomPasswordEncoderFactories.getInstance().getPasswordEncoder(passwordEncoderType);
+        return CustomPasswordEncoderFactories.getInstance().getPasswordEncoder(loginConfigProperties.getPassword().getEncoder().getType());
     }
 
     @Bean

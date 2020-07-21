@@ -1,5 +1,6 @@
 package org.springframework.security.oauth.samples.web.url;
 
+import org.springframework.security.oauth.samples.configproperties.OauthClient;
 import org.springframework.util.StringUtils;
 
 public class ClientCredentialsUrl {
@@ -11,7 +12,10 @@ public class ClientCredentialsUrl {
     private CredentialsEntity cre = new CredentialsEntity();
     private MyUrl myUrl;
 
-    public ClientCredentialsUrl(String httpPath, String contextPath, String redirect) {
+    public ClientCredentialsUrl(OauthClient oauthClient, String httpPath, String contextPath, String redirect) {
+        cre.setClientId(oauthClient.getClientId());
+        cre.setClientSecret(oauthClient.getClientSecret());
+        cre.setScope(oauthClient.getClientScope());
         this.httpPath = httpPath;
         this.contextPath = contextPath;
         this.redirect = redirect;

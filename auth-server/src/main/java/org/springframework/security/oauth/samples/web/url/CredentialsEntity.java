@@ -1,5 +1,7 @@
 package org.springframework.security.oauth.samples.web.url;
 
+import org.thymeleaf.util.StringUtils;
+
 public class CredentialsEntity {
     private String clientIdKey = "client_id";
     private String clientSecretKey = "client_secret";
@@ -7,10 +9,9 @@ public class CredentialsEntity {
     private String grantTypeKey = "grant_type";
     private String redirectUriKey = "redirect_uri";
     private String responseTypeKey = "response_type";
-    //    private String clientId = "messaging-client";
-    private String clientId = System.getProperty("clientId", "messaging-client");
+    private String clientId = null;
     private String clientSecret = "secret";
-    private String scope = "message.read message.write";
+    private String scope = "";
 
     public String getParamClient() {
         return String.format("%s&%s", getParamClientId(), getParamClientSecret());
@@ -44,4 +45,31 @@ public class CredentialsEntity {
         return String.format("%s=%s", key, value);
     }
 
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    public void setScope(String scopeValue) {
+        if (StringUtils.isEmpty(scopeValue)) {
+            this.scope = "";
+        }
+        String[] scopes = scopeValue.split(",");
+        StringBuffer sb = new StringBuffer();
+        for (String v : scopes) {
+            if (v == null || v.trim().length() == 0) {
+                continue;
+            }
+            if (sb.length() == 0) {
+                sb.append(v.trim());
+            } else {
+                sb.append(" ").append(v.trim());
+            }
+
+        }
+        this.scope = sb.toString();
+    }
 }

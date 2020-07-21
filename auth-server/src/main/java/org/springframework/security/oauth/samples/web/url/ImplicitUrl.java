@@ -1,5 +1,6 @@
 package org.springframework.security.oauth.samples.web.url;
 
+import org.springframework.security.oauth.samples.configproperties.OauthClient;
 import org.springframework.util.StringUtils;
 
 public class ImplicitUrl {
@@ -13,7 +14,10 @@ public class ImplicitUrl {
     private MyUrl myUrl;
     private MyUrl specUrl;
 
-    public ImplicitUrl(String httpPath, String contextPath, String redirect) {
+    public ImplicitUrl(OauthClient oauthClient, String httpPath, String contextPath, String redirect) {
+        cre.setClientId(oauthClient.getClientId());
+        cre.setClientSecret(oauthClient.getClientSecret());
+        cre.setScope(oauthClient.getClientScope());
         this.httpPath = httpPath;
         this.contextPath = contextPath;
         this.redirect = redirect;

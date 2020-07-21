@@ -73,7 +73,7 @@ public class VerifyCodeUtil {
         return image;
     }
 
-    public VerifyCodeInfo createVerifyCodeInfo() {
+    public VerifyCodeInfo createVerifyCodeInfo(int timeout) {
         BufferedImage image = createImage();
         Graphics2D g2 = (Graphics2D) image.getGraphics();
         StringBuffer sb = new StringBuffer();
@@ -87,7 +87,7 @@ public class VerifyCodeUtil {
         }
         String text = sb.toString().toLowerCase();
         if (!RedisUtil.exists(VerifyCodeUtil.CACHE_KEY_PREFIX + text)) {
-            RedisUtil.set(VerifyCodeUtil.CACHE_KEY_PREFIX + text, text);
+            RedisUtil.setString(VerifyCodeUtil.CACHE_KEY_PREFIX + text, text, timeout);
         }
         drawLine(image);
         VerifyCodeInfo verifyCodeInfo = new VerifyCodeInfo();
