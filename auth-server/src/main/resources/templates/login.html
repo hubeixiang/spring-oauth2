@@ -14,30 +14,67 @@
     <p th:if="${loginError}" style="font-weight:bold;color:red;">
     <td th:text="${errorInfo}">${errorInfo}</td>
     </p>
-    <form th:action="@{/login}" method="post">
-        <div class="form-row">
-            <div class="form-group">
-                <label for="username" th:if="${box_Username}" th:text="${box_Username}">Username</label>
-                <input type="text" id="username" name="username" autofocus="autofocus" class="form-control">
-                <small class="form-text text-muted">user1 / password</small>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <div id="login-password">
+                <form th:action="@{/login}" method="post">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username" th:if="${box_Username}" th:text="${box_Username}">Username</label>
+                            <input type="text" id="username" name="username" autofocus="autofocus" class="form-control">
+                            <small class="form-text text-muted">admin / 123</small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password" th:if="${box_Password}" th:text="${box_Password}">Password</label>
+                            <input type="password" id="password" name="password" class="form-control">
+                            <input hidden type="publickey" id="publickey" name="publickey" th:value="${publickey}"/>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="verifyCode" th:if="${box_verifyCode}" th:text="${box_verifyCode}">Verification
+                                Code</label>
+                            <input type="verifyCode" id="verifyCode" name="verifyCode" class="form-control">
+                            <img src="/code/captcha" alt="">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="jsencryptEncoder()" th:if="${submit_tip}"
+                            th:text="${submit_tip}">Log in
+                    </button>
+                </form>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="password" th:if="${box_Password}" th:text="${box_Password}">Password</label>
-                <input type="password" id="password" name="password" class="form-control">
-                <input hidden type="publickey" id="publickey" name="publickey" th:value="${publickey}"/>
+        </li>
+        <li class="list-group-item">
+            <div id="login-sms">
+                <form action="/login-mobile" method="post">
+                    <table>
+                        <tr>
+                            <td>手机号码：</td>
+                            <td><input type="text" id="mobile" name="mobile"
+                                       value="直接输入对应账号(不能实际发送短信)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>短信验证码：</td>
+                            <td>
+                                <input type="text" id="smsVerifyCode" name="smsVerifyCode">
+                                <input type="hidden" id="codeSmsSendUrixx" name="codeSmsSendUrixx"
+                                       th:value="${codeSmsSendUri}">
+                                <a onclick="smsCodeSend()"><span>发送验证码</span></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <button type="submit">登录</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="verifyCode" th:if="${box_verifyCode}" th:text="${box_verifyCode}">Verification Code</label>
-                <input type="verifyCode" id="verifyCode" name="verifyCode" class="form-control">
-                <img src="/vercode" alt="">
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary" onclick="jsencryptEncoder()" th:if="${submit_tip}" th:text="${submit_tip}">Log in</button>
-    </form>
+        </li>
+    </ul>
 </div>
 <script src="/webjars/jquery/jquery.min.js" th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
@@ -51,6 +88,23 @@
         var password = $("#password").val();
 
         $("#password").val(encrypt.encrypt("" + password));
+    };
+
+    function smsCodeSend() {
+        var mobile = $("#mobile").val();
+        if (mobile == undefined || mobile == '') {
+            alert("电话号码不能为空");
+        }
+        var url = $("#codeSmsSendUrixx").val() + mobile;
+        $.ajax({
+            url: url,
+            success: function (args) {
+                alert("短信码:" + args);
+            },
+            error: function (args) {
+                alert("获取短信码错误:" + args);
+            }
+        });
     }
 </script>
 </body>

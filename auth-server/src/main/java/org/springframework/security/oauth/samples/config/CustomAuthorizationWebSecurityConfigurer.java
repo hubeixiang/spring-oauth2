@@ -17,7 +17,6 @@ package org.springframework.security.oauth.samples.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -36,12 +35,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth.commons.dao.AuthoritiesDao;
 import org.springframework.security.oauth.commons.dao.UserDao;
+import org.springframework.security.oauth.commons.user.HiosMobileUserDetailsService;
 import org.springframework.security.oauth.commons.user.HiosUserDetailsService;
 import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.custom.CustomAuthenticationSuccessHandler;
 import org.springframework.security.oauth.samples.custom.CustomDaoAuthenticationProvider;
+import org.springframework.security.oauth.samples.custom.CustomInvalidSessionStrategy;
 import org.springframework.security.oauth.samples.custom.CustomSessionInformationExpiredStrategy;
 import org.springframework.security.oauth.samples.custom.CustomWebAuthenticationDetailsSource;
+import org.springframework.security.oauth.samples.custom.filter.SmsCodeFilter;
 import org.springframework.security.oauth.samples.custom.filter.VerifyCodeFilter;
 import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -74,13 +76,19 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     @Autowired
     private LoginConfigProperties loginConfigProperties;
 
+    @Autowired
+    private SmsCodeFilter smsCodeFilter;
+
+    @Autowired
+    private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
+
     // @formatter:off
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
         http.authorizeRequests()
                 //定义不用验证的url
-                .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/vercode").permitAll()
+                .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/code/**").permitAll()
                 //登录与登录失败调转url不用验证
                 // 自定义页面的路径不用验证
                 .antMatchers(HttpMethod.GET, "/login").permitAll()
@@ -89,13 +97,13 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 .anyRequest().authenticated();
 
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加验证码校验过滤器
-//        http.addFilterBefore(smsCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加短信验证码校验过滤器
-//        http.apply(smsAuthenticationConfig);// 将短信验证码认证配置加到 Spring Security 中
+        http.addFilterBefore(smsCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加短信验证码校验过滤器
+        http.apply(smsCodeAuthenticationSecurityConfig);// 将短信验证码认证配置加到 Spring Security 中
 
         //session 管理
         http.sessionManagement()
-                .invalidSessionUrl("/session/invalid")
-//                .invalidSessionStrategy(new CustomInvalidSessionStrategy())
+//                .invalidSessionUrl("/session/invalid")
+                .invalidSessionStrategy(new CustomInvalidSessionStrategy())
                 // 设置同一个用户只能有一个登陆session
                 .maximumSessions(1)
                 // 设置为true，即禁止后面其它人的登录 ,不设置则是后登录导致前登录失效
@@ -148,6 +156,12 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     }
 
     @Bean
+    public UserDetailsService hiosMobileUserDetailsService() {
+        HiosMobileUserDetailsService hiosMobileUserDetailsService = new HiosMobileUserDetailsService(userDao, authoritiesDao);
+        return hiosMobileUserDetailsService;
+    }
+
+    @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
@@ -159,7 +173,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     }
 
     @Bean
-    public CustomDaoAuthenticationProvider customAuthenticationProvider() {
+    public CustomDaoAuthenticationProvider customDaoAuthenticationProvider() {
         CustomDaoAuthenticationProvider customDaoAuthenticationProvider = new CustomDaoAuthenticationProvider();
         customDaoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         customDaoAuthenticationProvider.setUserDetailsService(hiosUserDetailsService());
@@ -168,7 +182,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(customAuthenticationProvider());
+        auth.authenticationProvider(customDaoAuthenticationProvider());
     }
 
     @Bean

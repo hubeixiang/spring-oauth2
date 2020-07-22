@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth.commons.entity.user.CustomUser;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.session.HttpSessionDestroyedEvent;
 import org.springframework.stereotype.Component;
@@ -44,7 +45,7 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
                                 Authentication authentication)
             throws ServletException, IOException {
         // 登录成功后，进行数据处理
-        if(authentication != null){
+        if (authentication != null) {
             System.out.println("用户登出成功啦");
             String authenticationStr = objectMapper.writeValueAsString(authentication);
             if (authentication instanceof UsernamePasswordAuthenticationToken) {
@@ -53,7 +54,7 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
             System.out.println("用户登出信息打印：" + authenticationStr);
 
             deleteSessionRegistry(authentication);
-        }else{
+        } else {
             System.out.println("session超时用户登出");
         }
 
@@ -73,18 +74,35 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
     private void deleteSessionRegistry(Authentication authentication) {
         //退出成功后删除当前用户session
         List<Object> o = sessionRegistry.getAllPrincipals();
+        Object authPrincipal = authentication.getPrincipal();
+        boolean isCustomUser = false;
+        CustomUser authCustomUser = null;
+        if (authPrincipal instanceof CustomUser) {
+            isCustomUser = true;
+            authCustomUser = (CustomUser) authPrincipal;
+        }
         for (Object principal : o) {
             if (principal instanceof User) {
                 final User loggedUser = (User) principal;
-                if (authentication.getName().equals(loggedUser.getUsername())) {
-                    List<SessionInformation> sessionsInfo = sessionRegistry.getAllSessions(principal, false);
-                    if (null != sessionsInfo && sessionsInfo.size() > 0) {
-                        for (SessionInformation sessionInformation : sessionsInfo) {
-//                            sessionInformation.expireNow();
-                            sessionRegistry.removeSessionInformation(sessionInformation.getSessionId());
-                        }
+                if (loggedUser instanceof CustomUser && isCustomUser) {
+                    CustomUser customUser = (CustomUser) loggedUser;
+                    if (authCustomUser.getUserId().equals(customUser.getUserId())) {
+                        delete(principal);
+                    }
+                } else {
+                    if (authentication.getName().equals(loggedUser.getUsername())) {
+                        delete(principal);
                     }
                 }
+            }
+        }
+    }
+
+    private void delete(Object principal) {
+        List<SessionInformation> sessionsInfo = sessionRegistry.getAllSessions(principal, true);
+        if (null != sessionsInfo && sessionsInfo.size() > 0) {
+            for (SessionInformation sessionInformation : sessionsInfo) {
+                sessionRegistry.removeSessionInformation(sessionInformation.getSessionId());
             }
         }
     }

@@ -14,13 +14,33 @@ import java.sql.SQLException;
 
 @Service
 public class UserDao {
-    private final static String user_sql = "select * from sec_user where user_name= '%s' || login_id = '%s'";
+    private final static String user_name_sql = "select * from sec_user where user_name= '%s' || login_id = '%s'";
+    private final static String user_mobile_sql = "select * from sec_user where user_mobile= '%s' || user_phone = '%s' || login_id= '%s'";
+
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        SecUser secUser = jdbcTemplate.query(String.format(user_sql, username, username), new ResultSetExtractor<SecUser>() {
+        String sql = String.format(user_name_sql, username, username);
+        SecUser secUser = getSecUser(sql);
+        if (secUser == null) {
+            throw new UsernameNotFoundException("username is not exists!");
+        }
+        return secUser;
+    }
+
+    public SecurityUser loadUserByMobile(String mobile) throws UsernameNotFoundException {
+        String sql = String.format(user_mobile_sql, mobile, mobile, mobile);
+        SecUser secUser = getSecUser(sql);
+        if (secUser == null) {
+            throw new UsernameNotFoundException("mobile is not exists!");
+        }
+        return secUser;
+    }
+
+    private SecUser getSecUser(String sql) {
+        SecUser secUser = jdbcTemplate.query(sql, new ResultSetExtractor<SecUser>() {
             @Override
             public SecUser extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs != null && rs.next()) {
@@ -46,15 +66,13 @@ public class UserDao {
 //                        Instant instant = Instant.ofEpochSecond(date.getTime());
 //                        secUser.setModifiedTime(instant);
 //                    }
+                    secUser.setUserMobile(rs.getString("user_mobile".toUpperCase()));
+                    secUser.setUserPhone(rs.getString("user_phone".toUpperCase()));
                     return secUser;
                 }
                 return null;
             }
         });
-        if (secUser == null) {
-            throw new UsernameNotFoundException("username is not exists!");
-        }
-//        secUser.setPassword(secUser.prefixPassword() + secUser.getPassword());
         return secUser;
     }
 }

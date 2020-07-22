@@ -11,6 +11,9 @@ public interface SecurityUser {
 
     String prefixPassword();
 
+
+    public String getUserId();
+
     /**
      * Returns the username used to authenticate the user. Cannot return <code>null</code>.
      *

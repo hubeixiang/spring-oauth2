@@ -82,6 +82,11 @@
             <artifactId>hsven-commons-i18n</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.framework.hsven</groupId>
+            <artifactId>hsven-commons-utils</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 

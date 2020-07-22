@@ -26,6 +26,7 @@ public class SecUser implements SecurityUser,Serializable {
     private String userPhone;
     private String memo;
 
+    @Override
     public String getUserId() {
         return userId;
     }

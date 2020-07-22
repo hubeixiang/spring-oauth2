@@ -1,6 +1,7 @@
 package org.springframework.security.oauth.samples.web;
 
 import org.framework.hsven.i18n.I18nMessageUtil;
+import org.framework.hsven.utils.RandomStringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,12 +13,14 @@ import org.springframework.security.oauth.samples.cache.RedisUtil;
 import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.configproperties.OauthClient;
 import org.springframework.security.oauth.samples.web.url.AuthorizationCodeUrl;
+import org.springframework.security.oauth.samples.web.url.BaseUrl;
 import org.springframework.security.oauth.samples.web.url.CheckTokenUri;
 import org.springframework.security.oauth.samples.web.url.ClientCredentialsUrl;
 import org.springframework.security.oauth.samples.web.url.ImplicitUrl;
 import org.springframework.security.oauth.samples.web.url.RefreshTokenUri;
 import org.springframework.security.oauth.samples.web.url.ResourceOwnerPasswordCredentialsUrl;
 import org.springframework.security.oauth.samples.web.util.RSAUtils;
+import org.springframework.security.oauth.samples.web.util.SmsVerifyCodeUtil;
 import org.springframework.security.oauth.samples.web.util.VerifyCodeInfo;
 import org.springframework.security.oauth.samples.web.util.VerifyCodeUtil;
 import org.springframework.security.oauth.samples.web.util.WebUtil;
@@ -25,6 +28,8 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.DateUtils;
@@ -96,7 +101,7 @@ public class WelcomeLoginController {
         return "index";
     }
 
-    @GetMapping("/vercode")
+    @GetMapping("/code/captcha")
     public void code(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         VerifyCodeInfo verifyCodeInfo = vc.createVerifyCodeInfo(loginConfigProperties.getCaptcha().getTimeout());
         HttpSession session = req.getSession();
@@ -104,8 +109,28 @@ public class WelcomeLoginController {
         VerifyCodeUtil.output(verifyCodeInfo.getBufferedImage(), resp.getOutputStream());
     }
 
+    @GetMapping("/code/sms")
+    @ResponseBody
+    public String createSmsCode(Model model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
+        String mobile = ServletRequestUtils.getRequiredStringParameter(request, "mobile");
+        String code = RandomStringUtil.randomChar(4);
+        {
+//            SmsCodeSender smsCodeSender = new DefaultSmsCodeSender();
+//            smsCodeSender.send(mobile, smsCode.getCode());
+        }
+        if (code == null) {
+            code = mobile;
+        }
+
+        String key = String.format("%s%s_%s", SmsVerifyCodeUtil.CACHE_KEY_PREFIX, mobile, code.toLowerCase());
+//        if (!RedisUtil.exists(SmsVerifyCodeUtil.CACHE_KEY_PREFIX + text)) {
+        RedisUtil.setString(key, code, loginConfigProperties.getSms().getTimeout());
+//        }
+        return code;
+    }
+
     @GetMapping("/login")
-    public String login(Model model) {
+    public String login(Model model, HttpServletRequest request) {
         appendUserName(model);
         if (loginConfigProperties.getPassword().isJsencrypt()) {
             try {
@@ -128,6 +153,9 @@ public class WelcomeLoginController {
                 e.printStackTrace();
             }
         }
+        BaseUrl baseUrl = createBaseUrl(request);
+        String uri = baseUrl.getBaseUrl(baseUrl.getBaseUrl("code/sms"), "mobile", "");
+        model.addAttribute("codeSmsSendUri", uri);
         appendLoginTips(model);
         return "login";
     }
@@ -148,14 +176,15 @@ public class WelcomeLoginController {
             model.addAttribute("errorInfo", info);
         }
         appendUserName(model);
-        return login(model);
+        return login(model, request);
     }
 
     private void appendOauthUrl(Model model, HttpServletRequest request) {
-        String httpPath = WebUtil.getBasePath(request);
+        BaseUrl baseUrl = createBaseUrl(request);
+        String httpPath = baseUrl.getHttpPath();
+        String contextPath = baseUrl.getContextPath();
         String redirect = String.format("%s/%s", httpPath, "index");
         String state = "xyzabcn";
-        String contextPath = null;
         String clientId = System.getProperty("clientId", null);
         String clientSecret = System.getProperty("clientSecret", null);
         String scope = System.getProperty("clientScope", null);
@@ -254,5 +283,11 @@ public class WelcomeLoginController {
 
     private String getMessage(String code) {
         return I18nMessageUtil.getInstance().getMessage(code, LocaleContextHolder.getLocale());
+    }
+
+    private BaseUrl createBaseUrl(HttpServletRequest request) {
+        String httpPath = WebUtil.getBasePath(request);
+        String contextPath = null;
+        return new BaseUrl(httpPath, contextPath);
     }
 }

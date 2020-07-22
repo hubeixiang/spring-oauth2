@@ -38,3 +38,5 @@ login:
       type: bss
   captcha:
     timeout: 300
+  sms:
+    timeout: 300
