@@ -27,14 +27,14 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="username" th:if="${box_Username}" th:text="${box_Username}">Username</label>
-                            <input type="text" id="username" name="username" autofocus="autofocus" class="form-control">
+                            <input type="text" id="username" name="username" autofocus="autofocus">
                             <small class="form-text text-muted">admin / 123</small>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="password" th:if="${box_Password}" th:text="${box_Password}">Password</label>
-                            <input type="password" id="password" name="password" class="form-control">
+                            <input type="password" id="password" name="password">
                             <input hidden type="publickey" id="publickey" name="publickey" th:value="${publickey}"/>
                         </div>
                     </div>
@@ -42,7 +42,7 @@
                         <div class="form-group">
                             <label for="verifyCode" th:if="${box_verifyCode}" th:text="${box_verifyCode}">Verification
                                 Code</label>
-                            <input type="verifyCode" id="verifyCode" name="verifyCode" class="form-control">
+                            <input type="verifyCode" id="verifyCode" name="verifyCode">
                             <img src="/code/captcha" alt="">
                         </div>
                     </div>
@@ -86,7 +86,7 @@
 <script src="/webjars/bootstrap/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 <script src="/webjars/jsencrypt/bin/jsencrypt.min.js" th:src="@{/webjars/jsencrypt/bin/jsencrypt.min.js}"></script>
 <script type="text/javascript">
-    // $("#publickey").display = true;
+    $("#publickey").display = false;
 
     function jsencryptEncoder() {
         var encrypt = new JSEncrypt();
