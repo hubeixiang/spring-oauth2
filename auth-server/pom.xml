@@ -15,6 +15,18 @@
     </properties>
 
     <dependencies>
+        <!--
+        <dependency>
+            <groupId>com.hios.platform</groupId>
+            <artifactId>security-support-api-resource</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hios.platform</groupId>
+            <artifactId>security-support-data</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        -->
         <dependency>
             <groupId>com.sven.security.oauth2</groupId>
             <artifactId>oauth2-commons</artifactId>

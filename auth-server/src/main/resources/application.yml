@@ -40,3 +40,5 @@ login:
     timeout: 300
   sms:
     timeout: 300
+  userProfile:
+    userUri: http://192.168.1.21:18081/security/api/v1/users/

@@ -4,23 +4,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
+import java.util.Date;
 
 public class CustomUser extends User {
     private String userId;
+    private String loginId;
+    private Date loginTime = new Date();
 
-    public CustomUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
-        this.userId = username;
-    }
-
-    public CustomUser(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.userId = username;
-    }
-
-    public CustomUser(String userId, String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUser(String userId, String loginId, String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.userId = userId;
+        this.loginId = loginId;
     }
 
     public String getUserId() {
@@ -37,7 +31,9 @@ public class CustomUser extends User {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString()).append(": ");
         sb.append("userId: ").append(this.userId).append("; ");
+        sb.append("loginId: ").append(this.loginId).append("; ");
         sb.append("Username: ").append(this.getUsername()).append("; ");
+        sb.append("loginTime: ").append(this.loginTime).append("; ");
         sb.append("Password: [PROTECTED]; ");
         sb.append("Enabled: ").append(this.isEnabled()).append("; ");
         sb.append("AccountNonExpired: ").append(this.isAccountNonExpired()).append("; ");
@@ -62,5 +58,13 @@ public class CustomUser extends User {
         }
 
         return sb.toString();
+    }
+
+    public String getLoginId() {
+        return loginId;
+    }
+
+    public Date getLoginTime() {
+        return loginTime;
     }
 }

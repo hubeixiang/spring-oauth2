@@ -21,9 +21,10 @@ public abstract class HiosUserDetail {
     protected UserDetails createUserDetails(String username,
                                             SecurityUser securityUser, List<GrantedAuthority> combinedAuthorities) {
         String userId = securityUser.getUserId();
+        String loginId = securityUser.getLoginId();
         String returnUsername = securityUser.getUsername();
 
-        return new CustomUser(userId, returnUsername, securityUser.getPassword(),
+        return new CustomUser(userId, loginId, returnUsername, securityUser.getPassword(),
                 securityUser.isEnabled(), securityUser.isAccountNonExpired(),
                 securityUser.isCredentialsNonExpired(), securityUser.isAccountNonLocked(), combinedAuthorities);
     }

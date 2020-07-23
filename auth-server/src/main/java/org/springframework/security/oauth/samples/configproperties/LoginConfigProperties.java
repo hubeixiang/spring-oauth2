@@ -11,6 +11,7 @@ public class LoginConfigProperties {
     private Captcha captcha = new Captcha();
     private Password password = new Password();
     private Sms sms = new Sms();
+    private UserProfile userProfile = new UserProfile();
 
     public OauthClient getOauthClient() {
         return oauthClient;
@@ -42,5 +43,13 @@ public class LoginConfigProperties {
 
     public void setSms(Sms sms) {
         this.sms = sms;
+    }
+
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
     }
 }

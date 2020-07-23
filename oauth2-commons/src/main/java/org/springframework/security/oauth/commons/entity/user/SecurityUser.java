@@ -14,6 +14,8 @@ public interface SecurityUser {
 
     public String getUserId();
 
+    public String getLoginId();
+
     /**
      * Returns the username used to authenticate the user. Cannot return <code>null</code>.
      *

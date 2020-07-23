@@ -14,15 +14,15 @@ import java.sql.SQLException;
 
 @Service
 public class UserDao {
-    private final static String user_name_sql = "select * from sec_user where user_name= '%s' || login_id = '%s'";
-    private final static String user_mobile_sql = "select * from sec_user where user_mobile= '%s' || user_phone = '%s' || login_id= '%s'";
+    private final static String user_name_sql = "select * from sec_user where (user_name= '%s' || login_id = '%s' || user_id = '%s') and deleted_time is null order by user_id";
+    private final static String user_mobile_sql = "select * from sec_user where (user_mobile= '%s' || user_phone = '%s' || login_id= '%s') and deleted_time is null order by user_id";
 
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        String sql = String.format(user_name_sql, username, username);
+        String sql = String.format(user_name_sql, username, username, username);
         SecUser secUser = getSecUser(sql);
         if (secUser == null) {
             throw new UsernameNotFoundException("username is not exists!");

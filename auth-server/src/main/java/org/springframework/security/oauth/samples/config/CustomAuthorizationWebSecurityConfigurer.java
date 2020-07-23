@@ -48,6 +48,7 @@ import org.springframework.security.oauth.samples.custom.filter.VerifyCodeFilter
 import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * 验证服务器的安全控制实现
@@ -204,5 +205,10 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
         SmartApplicationListener smartListener = new GenericApplicationListenerAdapter(
                 delegate);
         delegating.addListener(smartListener);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
