@@ -92,8 +92,10 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 //登录与登录失败调转url不用验证
                 // 自定义页面的路径不用验证
                 .antMatchers(HttpMethod.GET, "/login").permitAll()
-                // 失败跳转不用验证
+                // 登录失败跳转不用验证
                 .antMatchers(HttpMethod.GET, "/login-error").permitAll()
+                // 服务失败跳转不用验证
+                .antMatchers(HttpMethod.GET, "/error").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加验证码校验过滤器

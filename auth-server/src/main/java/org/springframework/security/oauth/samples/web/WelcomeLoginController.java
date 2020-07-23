@@ -179,6 +179,25 @@ public class WelcomeLoginController {
         return login(model, request);
     }
 
+    @GetMapping("/error")
+    public String error(Model model, HttpServletRequest request) {
+        model.addAttribute("error", true);
+        Object exception = request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        Object info = null;
+        if (exception instanceof SessionAuthenticationException) {
+            info = getMessage("WelcomeLoginController.user_alread_login");
+        } else {
+            info = exception;
+        }
+        if (info instanceof Exception) {
+            model.addAttribute("errorInfo", ((Exception) info).getMessage());
+        } else {
+            model.addAttribute("errorInfo", info);
+        }
+        appendLoginTips(model);
+        return "error";
+    }
+
     private void appendOauthUrl(Model model, HttpServletRequest request) {
         BaseUrl baseUrl = createBaseUrl(request);
         String httpPath = baseUrl.getHttpPath();

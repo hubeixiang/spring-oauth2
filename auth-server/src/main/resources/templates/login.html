@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.css"
           th:href="@{/webjars/bootstrap/css/bootstrap.css}"/>
+    <script>
+        <!-- 解决登录页面嵌套问题 -->
+        // if (top.location != self.location){
+        //     top.location=self.location;
+        // }
+    </script>
 </head>
 <body>
 <div class="container">
