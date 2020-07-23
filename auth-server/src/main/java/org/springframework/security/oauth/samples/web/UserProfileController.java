@@ -9,23 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.framework.hsven.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth.commons.entity.user.CustomUser;
 import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
-import org.springframework.security.oauth.samples.web.util.ApiServiceConstants;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,95 +26,37 @@ import java.util.Map;
  * @author
  * @since 1.0.0
  */
-@RestController("profileController")
-public class UserProfileController implements ApiEndpoint {
-
+public abstract class UserProfileController {
     private static final Logger logger = LoggerFactory
             .getLogger(UserProfileController.class);
 
-    @Autowired
-    private LoginConfigProperties loginConfigProperties;
+    public abstract LoginConfigProperties getLoginConfigProperties();
 
-    @Autowired
-    private RestTemplate restTemplate;
+    public abstract UserDetailsService getHiosMobileUserDetailsService();
 
-    @Autowired
-    @Qualifier("hiosMobileUserDetailsService")
-    private UserDetailsService hiosMobileUserDetailsService;
+    public abstract RestTemplate getRestTemplate();
 
-    private static void logout(final HttpServletRequest request) {
-        request.getSession().invalidate();
-    }
-
-    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/user","/user"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Object user(final HttpServletRequest request,
-                       final HttpServletResponse response) {
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            logout(request);
-            throw new AuthenticationServiceException(String.format("Missing [%s]", "Authentication"));
-        }
-
-        if (authentication.getPrincipal() == null) {
-            logout(request);
-            throw new AuthenticationServiceException(String.format("Missing [%s]", "Authentication Principal"));
-        }
+    protected Object getCurrentUser(Authentication authentication, Date loginTime) {
         String userId = getUserId(authentication);
-        Date loginTime = getLoginTime(authentication);
-        logger.debug("User userId is [{}]", userId);
-
         Object currentUser = null;
-        try {
-            if (StringUtils.isEmpty(loginConfigProperties.getUserProfile().getUserUri())) {
-                currentUser = hiosMobileUserDetailsService.loadUserByUsername(userId);
-            } else {
-                String uri = String.format("%s/%s", loginConfigProperties.getUserProfile().getUserUri(), userId);
-                currentUser = restTemplate.getForObject(uri, Object.class);
-            }
-            if (currentUser != null) {
-                String json = JsonUtils.toJson(currentUser);
-                Map tmp = JsonUtils.fromJson(json, Map.class);
-                Map map = new HashMap();
-                map.put("loginTime", loginTime);
-                map.putAll(tmp);
-                currentUser = map;
-            }
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to retrieve user profile", e);
+        if (StringUtils.isEmpty(getLoginConfigProperties().getUserProfile().getUserUri())) {
+            currentUser = getHiosMobileUserDetailsService().loadUserByUsername(userId);
+        } else {
+            String uri = String.format("%s/%s", getLoginConfigProperties().getUserProfile().getUserUri(), userId);
+            currentUser = getRestTemplate().getForObject(uri, Object.class);
         }
-
-        if (currentUser == null) {
-            throw new RuntimeException("Failed to retrieve user profile.");
+        if (currentUser != null) {
+            String json = JsonUtils.toJson(currentUser);
+            Map tmp = JsonUtils.fromJson(json, Map.class);
+            Map map = new HashMap();
+            map.put("loginTime", loginTime);
+            map.putAll(tmp);
+            currentUser = map;
         }
-
-        logger.debug("Final user profile is [{}]", JsonUtils.toJson(currentUser));
         return currentUser;
     }
 
-    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/status","/status"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public UserStatus status(final HttpServletRequest request,
-                             final HttpServletResponse response) {
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            logout(request);
-            return new UserStatus(false,
-                    String.format("Missing [%s]", "Authentication"));
-        }
-        if (authentication.getPrincipal() == null) {
-            logout(request);
-            return new UserStatus(false,
-                    String.format("Missing [%s]", "Authentication Principal"));
-        }
-        String userId = getUserId(authentication);
-        return new UserStatus(true,
-                String.format("Current user is: [%s]", userId));
-    }
-
-    private String getUserId(Authentication authentication) {
+    protected String getUserId(Authentication authentication) {
         Object principal = authentication.getPrincipal();
         String userId = null;
         if (principal instanceof CustomUser) {
@@ -137,7 +69,7 @@ public class UserProfileController implements ApiEndpoint {
         return userId;
     }
 
-    private Date getLoginTime(Authentication authentication) {
+    protected Date getLoginTime(Authentication authentication) {
         Object principal = authentication.getPrincipal();
         Date loginTime = null;
         if (principal instanceof CustomUser) {
@@ -149,7 +81,7 @@ public class UserProfileController implements ApiEndpoint {
     }
 
 
-    private static class AccessTokenRequiredException extends AuthenticationException {
+    protected static class AccessTokenRequiredException extends AuthenticationException {
 
         AccessTokenRequiredException() {
             super("Requires authentication");
@@ -164,7 +96,7 @@ public class UserProfileController implements ApiEndpoint {
         }
     }
 
-    private static class AccessTokenInvalidException extends AuthenticationException {
+    protected static class AccessTokenInvalidException extends AuthenticationException {
 
         AccessTokenInvalidException() {
             super("Bad credentials");
@@ -179,7 +111,7 @@ public class UserProfileController implements ApiEndpoint {
         }
     }
 
-    private static class AccessTokenExpiredException extends AuthenticationException {
+    protected static class AccessTokenExpiredException extends AuthenticationException {
 
         AccessTokenExpiredException() {
             super("Expired credentials");
@@ -195,7 +127,7 @@ public class UserProfileController implements ApiEndpoint {
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private static class UserStatus {
+    protected static class UserStatus {
 
         private final boolean authenticated;
         private final String message;
