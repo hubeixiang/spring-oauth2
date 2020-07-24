@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.web.util.ApiServiceConstants;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -37,8 +36,6 @@ public class UserProfileAuthorizationController extends UserProfileController im
     private static final Logger logger = LoggerFactory
             .getLogger(UserProfileAuthorizationController.class);
 
-    private DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
-
     @Autowired
     private LoginConfigProperties loginConfigProperties;
 
@@ -50,8 +47,6 @@ public class UserProfileAuthorizationController extends UserProfileController im
     private UserDetailsService hiosMobileUserDetailsService;
 
     public UserProfileAuthorizationController() {
-        this.bearerTokenResolver.setAllowUriQueryParameter(true);
-        this.bearerTokenResolver.setAllowFormEncodedBodyParameter(true);
     }
 
     private static void logout(final HttpServletRequest request) {
@@ -63,8 +58,6 @@ public class UserProfileAuthorizationController extends UserProfileController im
                        final HttpServletResponse response) {
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
-        String tokenValue = bearerTokenResolver.resolve(request);
-        System.out.println("UserProfileAuthorizationController:" + tokenValue);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             logout(request);

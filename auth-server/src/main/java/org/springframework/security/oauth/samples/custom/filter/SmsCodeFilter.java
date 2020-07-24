@@ -59,7 +59,6 @@ public class SmsCodeFilter extends GenericFilterBean {
         String mobile = ServletRequestUtils.getStringParameter(request.getRequest(), SmsVerifyCodeUtil.WEB_HTML_MOBILE_KEY);
         String key = String.format("%s%s_%s", SmsVerifyCodeUtil.CACHE_KEY_PREFIX, mobile, codeInRequest.toLowerCase());
         StringCacheEntity codeInSession = RedisUtil.getString(key);
-        RedisUtil.remove(SmsVerifyCodeUtil.CACHE_KEY_PREFIX + codeInRequest.toLowerCase());
         if (codeInSession == null) {
             throw new AuthenticationServiceException(getMessage("SmsCodeFilter.sms_code_not_exists"));
         }
@@ -69,6 +68,8 @@ public class SmsCodeFilter extends GenericFilterBean {
         if (!codeInSession.getCacheValue().equalsIgnoreCase(codeInRequest)) {
             throw new AuthenticationServiceException(getMessage("SmsCodeFilter.sms_code_error"));
         }
+        //登录成功后删除缓存的短信码
+        RedisUtil.remove(SmsVerifyCodeUtil.CACHE_KEY_PREFIX + codeInRequest.toLowerCase());
     }
 
     private String getMessage(String code) {
