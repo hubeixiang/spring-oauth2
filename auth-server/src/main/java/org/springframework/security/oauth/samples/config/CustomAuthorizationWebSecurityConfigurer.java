@@ -99,6 +99,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 .antMatchers(HttpMethod.GET, "/error").permitAll()
                 .anyRequest().authenticated();
 
+
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加验证码校验过滤器
         http.addFilterBefore(smsCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加短信验证码校验过滤器
         http.apply(smsCodeAuthenticationSecurityConfig);// 将短信验证码认证配置加到 Spring Security 中

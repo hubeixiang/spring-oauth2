@@ -1,6 +1,7 @@
 package org.springframework.security.oauth.samples.custom;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 登出成功处理
@@ -37,6 +39,8 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
     public CustomLogoutSuccessHandler() {
         //登出成功时重定向的url
         setDefaultTargetUrl("/login");
+        //退出时给定了退出调转的地址
+        setTargetUrlParameter("service");
     }
 
     @Override
@@ -57,7 +61,6 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
         } else {
             System.out.println("session超时用户登出");
         }
-
 
         super.onLogoutSuccess(request, response, authentication);
     }

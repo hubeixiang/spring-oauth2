@@ -28,12 +28,12 @@ public class ClientCredentialsUrl {
         if (StringUtils.isEmpty(contextPath)) {
             uri = String.format("%s/%s?%s&%s&%s&%s", httpPath, oauthUrl
                     , cre.getParamGrantType(grantType)
-                    , cre.getParamScope(), cre.getParamClientId()
+                    , cre.getParamScope(), cre.getParamClient()
                     , cre.getParamRedirectUri(redirect));
         } else {
             uri = String.format("%s/%s/%s?%s&%s&%s&%s", httpPath, contextPath, oauthUrl
                     , cre.getParamGrantType(grantType)
-                    , cre.getParamScope(), cre.getParamClientId()
+                    , cre.getParamScope(), cre.getParamClient()
                     , cre.getParamRedirectUri(redirect));
         }
         myUrl = new MyUrl();

@@ -26,6 +26,11 @@ spring:
     validation-query: SELECT 1
     time-between-eviction-runs-millis: 18800
     jdbc-interceptors: ConnectionState;SlowQueryReport(threshold=50)
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8090/auth/realms/oauth2-sample/protocol/openid-connect/certs
 
 login:
   oauthClient:
