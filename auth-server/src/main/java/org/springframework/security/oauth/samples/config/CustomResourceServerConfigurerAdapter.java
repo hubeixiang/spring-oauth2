@@ -31,7 +31,9 @@ public class CustomResourceServerConfigurerAdapter extends ResourceServerConfigu
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .antMatcher(String.format("%s/**", ApiServiceConstants.BASE_API_URL))
+                .requestMatchers()
+                .antMatchers("/oauth2/**",String.format("%s/**", ApiServiceConstants.BASE_API_URL))
+                .and()
                 .authorizeRequests()
                 .anyRequest().authenticated();
     }

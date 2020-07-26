@@ -53,7 +53,7 @@ public class UserProfileAuthorizationController extends UserProfileController im
         request.getSession().invalidate();
     }
 
-    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/user"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/user","/oauth2/user"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Object user(final HttpServletRequest request,
                        final HttpServletResponse response) {
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
@@ -88,7 +88,7 @@ public class UserProfileAuthorizationController extends UserProfileController im
         return currentUser;
     }
 
-    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/status"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/status","/oauth2/status"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public UserStatus status(final HttpServletRequest request,
                              final HttpServletResponse response) {
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);

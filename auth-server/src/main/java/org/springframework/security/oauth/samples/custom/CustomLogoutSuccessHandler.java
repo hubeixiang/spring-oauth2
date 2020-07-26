@@ -38,7 +38,7 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
     public CustomLogoutSuccessHandler() {
         //登出成功时重定向的url
-        setDefaultTargetUrl("/login");
+        setDefaultTargetUrl("/login?logout");
         //退出时给定了退出调转的地址
         setTargetUrlParameter("service");
     }

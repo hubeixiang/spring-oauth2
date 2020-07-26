@@ -89,7 +89,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
         http.headers().frameOptions().disable();
         http.authorizeRequests()
                 //定义不用验证的url
-                .antMatchers("/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/code/**").permitAll()
+                .antMatchers("/","/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/code/**").permitAll()
                 //登录与登录失败调转url不用验证
                 // 自定义页面的路径不用验证
                 .antMatchers(HttpMethod.GET, "/login").permitAll()
@@ -136,6 +136,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 //登录成功重定向地址(与登录成功调转地址)
 //                .successForwardUrl("/index");
                 //登录成功后自定义的用户信息记录,比如记录登录用户,登录用户数等等
+                .defaultSuccessUrl("/index")
                 .successHandler(new CustomAuthenticationSuccessHandler());
         //登出
         http.logout()
