@@ -46,6 +46,10 @@
                             <img src="/code/captcha" alt="">
                         </div>
                     </div>
+                    <p th:if="${iframeSaveRequestLoginID}">
+                        <input type="hidden" name="iframeSaveRequestLoginID"
+                               th:value="${iframeSaveRequestLoginID}">
+                    </p>
                     <button type="submit" class="btn btn-primary" onclick="jsencryptEncoder()" th:if="${submit_tip}"
                             th:text="${submit_tip}">Log in
                     </button>
@@ -73,6 +77,10 @@
                         </tr>
                         <tr>
                             <td colspan="2">
+                                <p th:if="${iframeSaveRequestLoginID}">
+                                    <input type="hidden" name="iframeSaveRequestLoginID"
+                                           th:value="${iframeSaveRequestLoginID}">
+                                </p>
                                 <button type="submit">登录</button>
                             </td>
                         </tr>

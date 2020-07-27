@@ -43,9 +43,12 @@ import org.springframework.security.oauth.samples.custom.CustomDaoAuthentication
 import org.springframework.security.oauth.samples.custom.CustomInvalidSessionStrategy;
 import org.springframework.security.oauth.samples.custom.CustomSessionInformationExpiredStrategy;
 import org.springframework.security.oauth.samples.custom.CustomWebAuthenticationDetailsSource;
+import org.springframework.security.oauth.samples.custom.authentication.CustomLoginUrlAuthenticationEntryPoint;
+import org.springframework.security.oauth.samples.custom.authentication.CustomUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.custom.filter.SmsCodeFilter;
 import org.springframework.security.oauth.samples.custom.filter.VerifyCodeFilter;
 import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
+import org.springframework.security.oauth.samples.web.util.ApiServiceConstants;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.client.RestTemplate;
@@ -75,6 +78,9 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     private LogoutSuccessHandler logoutSuccessHandler;
 
     @Autowired
+    private CustomUrlAuthenticationFailureHandler customUrlAuthenticationFailureHandler;
+
+    @Autowired
     private LoginConfigProperties loginConfigProperties;
 
     @Autowired
@@ -89,7 +95,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
         http.headers().frameOptions().disable();
         http.authorizeRequests()
                 //定义不用验证的url
-                .antMatchers("/","/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/code/**").permitAll()
+                .antMatchers("/", "/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/code/**").permitAll()
                 //登录与登录失败调转url不用验证
                 // 自定义页面的路径不用验证
                 .antMatchers(HttpMethod.GET, "/login").permitAll()
@@ -102,7 +108,10 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加验证码校验过滤器
         http.addFilterBefore(smsCodeFilter, UsernamePasswordAuthenticationFilter.class); // 添加短信验证码校验过滤器
-        http.apply(smsCodeAuthenticationSecurityConfig);// 将短信验证码认证配置加到 Spring Security 中
+        // 将短信验证码认证配置加到 Spring Security 中
+        http.apply(smsCodeAuthenticationSecurityConfig)
+                //配置登陆验证成功后处理的映射,未配置时就会默认走登陆框中配置的验证成功后处理器
+                .successHandler(customAuthenticationSuccessHandler());
 
         //session 管理
         http.sessionManagement()
@@ -124,20 +133,28 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 //                return null;
 //            }
 //        });
+        http.exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint("/login"));
+        ;
 
         //定义登录操作
+        String defaultFailureUrl = "/login-error";
+        customUrlAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
         http.formLogin()
                 //定义解析登录时除了用户密码外的验证详细信息
                 .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
                 //设置自定义的登录页面
                 .loginPage("/login")
-                //登录失败跳转，指定的路径要能匿名访问
-                .failureUrl("/login-error")
+        //登录失败跳转，指定的路径要能匿名访问
+//                .failureUrl("/login-error")
+                .failureHandler(customUrlAuthenticationFailureHandler)
                 //登录成功重定向地址(与登录成功调转地址)
 //                .successForwardUrl("/index");
                 //登录成功后自定义的用户信息记录,比如记录登录用户,登录用户数等等
-                .defaultSuccessUrl("/index")
-                .successHandler(new CustomAuthenticationSuccessHandler());
+                //两中,使用其中一种
+//                .defaultSuccessUrl("/index")
+//                .successHandler(new CustomAuthenticationSuccessHandler());
+                .successHandler(customAuthenticationSuccessHandler());
+
         //登出
         http.logout()
                 //用户登出成功处理
@@ -183,6 +200,16 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
         customDaoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         customDaoAuthenticationProvider.setUserDetailsService(hiosUserDetailsService());
         return customDaoAuthenticationProvider;
+    }
+
+    @Bean
+    public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        String defaultSuccessUrl = "/index";
+        CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler();
+        handler.setDefaultTargetUrl(defaultSuccessUrl);
+        handler.setAlwaysUseDefaultTargetUrl(false);
+        handler.setTargetUrlParameter(ApiServiceConstants.IFRAME_SAVE_REQUST_LOGIN_URL_WEB_ID);
+        return handler;
     }
 
     @Override

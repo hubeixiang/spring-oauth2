@@ -1,12 +1,13 @@
 package org.springframework.security.oauth.samples.custom.filter;
 
 import org.framework.hsven.i18n.I18nMessageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
+import org.springframework.security.oauth.samples.custom.authentication.CustomUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.web.util.VerifyCodeUtil;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -24,12 +25,13 @@ import java.io.IOException;
  */
 @Component
 public class VerifyCodeFilter extends GenericFilterBean {
-    private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler();
+
+    @Autowired
+    private CustomUrlAuthenticationFailureHandler customUrlAuthenticationFailureHandler;
+
     private String defaultFilterProcessUrl = "/login";
-    private String defaultFailureUrl = "/login-error";
 
     public VerifyCodeFilter() {
-        simpleUrlAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class VerifyCodeFilter extends GenericFilterBean {
                     throw new AuthenticationServiceException(getMessage("WelcomeLoginController.verifyCode_timeout_ERROR"));
                 }
             } catch (AuthenticationException e) {
-                simpleUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                customUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
                 return;
             }
         }

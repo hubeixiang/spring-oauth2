@@ -19,6 +19,7 @@ import org.springframework.security.oauth.samples.web.url.ClientCredentialsUrl;
 import org.springframework.security.oauth.samples.web.url.ImplicitUrl;
 import org.springframework.security.oauth.samples.web.url.RefreshTokenUri;
 import org.springframework.security.oauth.samples.web.url.ResourceOwnerPasswordCredentialsUrl;
+import org.springframework.security.oauth.samples.web.util.ApiServiceConstants;
 import org.springframework.security.oauth.samples.web.util.RSAUtils;
 import org.springframework.security.oauth.samples.web.util.SmsVerifyCodeUtil;
 import org.springframework.security.oauth.samples.web.util.VerifyCodeInfo;
@@ -157,6 +158,10 @@ public class WelcomeLoginController {
         String uri = baseUrl.getBaseUrl(baseUrl.getBaseUrl("code/sms"), "mobile", "");
         model.addAttribute("codeSmsSendUri", uri);
         appendLoginTips(model);
+        String redirectUrl = ApiServiceConstants.parserIframeUrl(request);
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(redirectUrl)) {
+            model.addAttribute(ApiServiceConstants.IFRAME_SAVE_REQUST_LOGIN_URL_WEB_ID, redirectUrl.toString());
+        }
         return "login";
     }
 

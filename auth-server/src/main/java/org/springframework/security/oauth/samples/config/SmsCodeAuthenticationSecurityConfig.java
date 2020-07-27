@@ -23,7 +23,7 @@ public class SmsCodeAuthenticationSecurityConfig extends SecurityConfigurerAdapt
     @Qualifier("hiosMobileUserDetailsService")
     UserDetailsService userDetailsService;
 
-    private AuthenticationSuccessHandler authenticationSuccessHandler = new CustomAuthenticationSuccessHandler();
+    private AuthenticationSuccessHandler authenticationSuccessHandler = null;
 
     private AuthenticationFailureHandler authenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/login-error");
 
@@ -31,6 +31,11 @@ public class SmsCodeAuthenticationSecurityConfig extends SecurityConfigurerAdapt
     public void configure(HttpSecurity http) throws Exception {
         SmsCodeAuthenticationFilter smsCodeAuthenticationFilter = new SmsCodeAuthenticationFilter();
         smsCodeAuthenticationFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
+
+        if (authenticationSuccessHandler == null) {
+            authenticationSuccessHandler = new CustomAuthenticationSuccessHandler();
+        }
+
         smsCodeAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
         smsCodeAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
 
@@ -46,4 +51,11 @@ public class SmsCodeAuthenticationSecurityConfig extends SecurityConfigurerAdapt
         http.authenticationProvider(smsCodeAuthenticationProvider)
                 .addFilterAfter(smsCodeAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
+
+    public SmsCodeAuthenticationSecurityConfig successHandler(AuthenticationSuccessHandler successHandler) {
+        this.authenticationSuccessHandler = successHandler;
+        return this;
+    }
+
+
 }

@@ -8,6 +8,7 @@ import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -64,6 +65,18 @@ public class RSAUtils {
      */
     private static final int INITIALIZE_LENGTH = 1024;
 
+    private static KeyPairGenerator keyPairGen;
+
+    static {
+        try {
+            keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
+            keyPairGen.initialize(INITIALIZE_LENGTH);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            keyPairGen = null;
+        }
+    }
+
     /** */
     /**
      * <p>
@@ -74,8 +87,6 @@ public class RSAUtils {
      * @throws Exception
      */
     public static Map<String, Object> genKeyPair() throws Exception {
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
-        keyPairGen.initialize(INITIALIZE_LENGTH);
         KeyPair keyPair = keyPairGen.generateKeyPair();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();

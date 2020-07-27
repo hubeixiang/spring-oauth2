@@ -1,12 +1,13 @@
 package org.springframework.security.oauth.samples.custom.filter;
 
 import org.framework.hsven.i18n.I18nMessageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
+import org.springframework.security.oauth.samples.custom.authentication.CustomUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.web.util.SmsVerifyCodeUtil;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -27,12 +28,11 @@ import java.io.IOException;
  */
 @Component
 public class SmsCodeFilter extends GenericFilterBean {
-    private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler();
+    @Autowired
+    private CustomUrlAuthenticationFailureHandler customUrlAuthenticationFailureHandler;
     private String defaultFilterProcessUrl = "/login-mobile";
-    private String defaultFailureUrl = "/login-error";
 
     public SmsCodeFilter() {
-        simpleUrlAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SmsCodeFilter extends GenericFilterBean {
             try {
                 validate(new ServletWebRequest(request));
             } catch (AuthenticationException e) {
-                simpleUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                customUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
                 return;
             }
         }
