@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
+import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.custom.authentication.CustomSimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.web.util.SmsVerifyCodeUtil;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.GenericFilterBean;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -30,9 +32,18 @@ import java.io.IOException;
 public class SmsCodeFilter extends GenericFilterBean {
     @Autowired
     private CustomSimpleUrlAuthenticationFailureHandler customSimpleUrlAuthenticationFailureHandler;
-    private String defaultFilterProcessUrl = "/login-mobile";
+
+    @Autowired
+    private LoginConfigProperties loginConfigProperties;
+
+    private String defaultFilterProcessUrl;
 
     public SmsCodeFilter() {
+    }
+
+    @PostConstruct
+    public void init() {
+        defaultFilterProcessUrl = loginConfigProperties.getSms().getSmsLoginPostUrl();
     }
 
     @Override

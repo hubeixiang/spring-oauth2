@@ -17,6 +17,7 @@ public class SmsCodeAuthenticationFilter extends AbstractAuthenticationProcessin
 
     public SmsCodeAuthenticationFilter() {
         super(new AntPathRequestMatcher("/login-mobile", "POST")); //指定当前过滤器处理的请求
+        //也可以在外部指定
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {

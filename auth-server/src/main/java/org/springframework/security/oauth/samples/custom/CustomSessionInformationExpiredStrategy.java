@@ -2,13 +2,17 @@ package org.springframework.security.oauth.samples.custom;
 
 import org.apache.commons.lang3.StringUtils;
 import org.framework.hsven.i18n.I18nMessageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -19,9 +23,17 @@ import java.util.Map;
  * 则第一次登陆的用户再访问我们的项目时会进入到该类
  * event里封装了request、response信息
  */
+@Component
 public class CustomSessionInformationExpiredStrategy implements SessionInformationExpiredStrategy {
-    String failurePage = "/login-error";
+    @Autowired
+    private LoginConfigProperties loginConfigProperties;
+    private String failurePage;
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    @PostConstruct
+    public void init() {
+        failurePage = loginConfigProperties.getLoginform().getLoginErrorPageUrl();
+    }
 
     @Override
     public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {

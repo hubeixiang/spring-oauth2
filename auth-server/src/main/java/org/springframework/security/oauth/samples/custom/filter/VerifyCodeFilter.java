@@ -6,12 +6,14 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
+import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.custom.authentication.CustomSimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.web.util.VerifyCodeUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -29,9 +31,17 @@ public class VerifyCodeFilter extends GenericFilterBean {
     @Autowired
     private CustomSimpleUrlAuthenticationFailureHandler customSimpleUrlAuthenticationFailureHandler;
 
-    private String defaultFilterProcessUrl = "/login";
+    @Autowired
+    private LoginConfigProperties loginConfigProperties;
+
+    private String defaultFilterProcessUrl;
 
     public VerifyCodeFilter() {
+    }
+
+    @PostConstruct
+    public void init() {
+        defaultFilterProcessUrl = loginConfigProperties.getLoginform().getDefaultLoginPostUrl();
     }
 
     @Override

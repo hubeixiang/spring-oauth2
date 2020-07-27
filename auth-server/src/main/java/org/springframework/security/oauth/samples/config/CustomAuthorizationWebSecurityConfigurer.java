@@ -89,6 +89,9 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     @Autowired
     private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
 
+    @Autowired
+    private CustomInvalidSessionStrategy customInvalidSessionStrategy;
+
     // @formatter:off
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -98,9 +101,9 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
                 .antMatchers("/", "/oauth2/keys", "/favicon.ico", "/webjars/**", "/welcome", "/static/**", "/code/**").permitAll()
                 //登录与登录失败调转url不用验证
                 // 自定义页面的路径不用验证
-                .antMatchers(HttpMethod.GET, "/login").permitAll()
+                .antMatchers(HttpMethod.GET, loginConfigProperties.getLoginform().getLoginPageUrl()).permitAll()
                 // 登录失败跳转不用验证
-                .antMatchers(HttpMethod.GET, "/login-error").permitAll()
+                .antMatchers(HttpMethod.GET, loginConfigProperties.getLoginform().getLoginErrorPageUrl()).permitAll()
                 // 服务失败跳转不用验证
                 .antMatchers(HttpMethod.GET, "/error").permitAll()
                 .anyRequest().authenticated();
@@ -116,7 +119,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
         //session 管理
         http.sessionManagement()
 //                .invalidSessionUrl("/session/invalid")
-                .invalidSessionStrategy(new CustomInvalidSessionStrategy())
+                .invalidSessionStrategy(customInvalidSessionStrategy)
                 // 设置同一个用户只能有一个登陆session
                 .maximumSessions(1)
                 // 设置为true，即禁止后面其它人的登录 ,不设置则是后登录导致前登录失效
@@ -133,17 +136,19 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 //                return null;
 //            }
 //        });
-        http.exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint("/login"));
+        http.exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginConfigProperties.getLoginform().getLoginPageUrl()));
         ;
 
         //定义登录操作
-        String defaultFailureUrl = "/login-error";
+        String defaultFailureUrl = loginConfigProperties.getLoginform().getLoginErrorPageUrl();
         customSimpleUrlAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
         http.formLogin()
                 //定义解析登录时除了用户密码外的验证详细信息
                 .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
                 //设置自定义的登录页面
-                .loginPage("/login")
+                .loginPage(loginConfigProperties.getLoginform().getLoginPageUrl())
+                //设置自定义登录页面中提交登录信息进行处理的post接口url
+                .loginProcessingUrl(loginConfigProperties.getLoginform().getDefaultLoginPostUrl())
                 //登录失败跳转，指定的路径要能匿名访问
 //                .failureUrl("/login-error")
                 .failureHandler(customSimpleUrlAuthenticationFailureHandler)
@@ -204,7 +209,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 
     @Bean
     public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        String defaultSuccessUrl = "/index";
+        String defaultSuccessUrl = loginConfigProperties.getLoginform().getLoginDefaultSucessUrl();
         CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler();
         handler.setDefaultTargetUrl(defaultSuccessUrl);
         handler.setAlwaysUseDefaultTargetUrl(false);

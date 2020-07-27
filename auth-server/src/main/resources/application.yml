@@ -37,6 +37,7 @@ login:
     loginPageUrl:  /login
     loginErrorPageUrl: /login-error
     loginDefaultSucessUrl:  /index
+    defaultLoginPostUrl: /login
   oauthClient:
     clientId: bss-embed-white
     clientSecret: secret
@@ -49,5 +50,6 @@ login:
     timeout: 300
   sms:
     timeout: 300
+    smsLoginPostUrl:  /login-mobile
   userProfile:
     userUri: http://192.168.1.21:18081/security/api/v1/users/

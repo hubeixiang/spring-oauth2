@@ -6,15 +6,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.custom.CustomAuthenticationSuccessHandler;
 import org.springframework.security.oauth.samples.custom.sms.SmsCodeAuthenticationFilter;
 import org.springframework.security.oauth.samples.custom.sms.SmsCodeAuthenticationProvider;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,9 +24,12 @@ public class SmsCodeAuthenticationSecurityConfig extends SecurityConfigurerAdapt
     @Qualifier("hiosMobileUserDetailsService")
     UserDetailsService userDetailsService;
 
+    @Autowired
+    private LoginConfigProperties loginConfigProperties;
+
     private AuthenticationSuccessHandler authenticationSuccessHandler = null;
 
-    private AuthenticationFailureHandler authenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/login-error");
+    private SimpleUrlAuthenticationFailureHandler authenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler();
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -35,6 +39,11 @@ public class SmsCodeAuthenticationSecurityConfig extends SecurityConfigurerAdapt
         if (authenticationSuccessHandler == null) {
             authenticationSuccessHandler = new CustomAuthenticationSuccessHandler();
         }
+
+        authenticationFailureHandler.setDefaultFailureUrl(loginConfigProperties.getLoginform().getLoginErrorPageUrl());
+
+        AntPathRequestMatcher requiresAuthenticationRequestMatcher = new AntPathRequestMatcher(loginConfigProperties.getSms().getSmsLoginPostUrl(), "POST");
+        smsCodeAuthenticationFilter.setRequiresAuthenticationRequestMatcher(requiresAuthenticationRequestMatcher);
 
         smsCodeAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
         smsCodeAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);

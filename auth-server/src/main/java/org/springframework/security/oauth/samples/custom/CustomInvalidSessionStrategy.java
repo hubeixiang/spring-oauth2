@@ -2,12 +2,16 @@ package org.springframework.security.oauth.samples.custom;
 
 import org.apache.commons.lang3.StringUtils;
 import org.framework.hsven.i18n.I18nMessageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.session.InvalidSessionStrategy;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,9 +21,18 @@ import java.util.Map;
 /**
  * session无效处理方法
  */
+
+@Component
 public class CustomInvalidSessionStrategy implements InvalidSessionStrategy {
-    String failurePage = "/login-error";
+    @Autowired
+    private LoginConfigProperties loginConfigProperties;
+    private String failurePage;
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    @PostConstruct
+    public void init() {
+        failurePage = loginConfigProperties.getLoginform().getLoginErrorPageUrl();
+    }
 
     @Override
     public void onInvalidSessionDetected(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

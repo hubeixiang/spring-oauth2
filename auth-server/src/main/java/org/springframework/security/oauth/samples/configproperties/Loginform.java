@@ -14,6 +14,12 @@ public class Loginform {
      */
     private String loginDefaultSucessUrl = "/";
 
+    /**
+     * 默认登录时,提交登录信息,服务进行处理的url
+     * 只是用户密码，或者手机号码短信登录
+     */
+    private String defaultLoginPostUrl = "/login";
+
     public String getLoginPageUrl() {
         return loginPageUrl;
     }
@@ -36,5 +42,13 @@ public class Loginform {
 
     public void setLoginDefaultSucessUrl(String loginDefaultSucessUrl) {
         this.loginDefaultSucessUrl = loginDefaultSucessUrl;
+    }
+
+    public String getDefaultLoginPostUrl() {
+        return defaultLoginPostUrl;
+    }
+
+    public void setDefaultLoginPostUrl(String defaultLoginPostUrl) {
+        this.defaultLoginPostUrl = defaultLoginPostUrl;
     }
 }
