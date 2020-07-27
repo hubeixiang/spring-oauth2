@@ -44,7 +44,7 @@ import org.springframework.security.oauth.samples.custom.CustomInvalidSessionStr
 import org.springframework.security.oauth.samples.custom.CustomSessionInformationExpiredStrategy;
 import org.springframework.security.oauth.samples.custom.CustomWebAuthenticationDetailsSource;
 import org.springframework.security.oauth.samples.custom.authentication.CustomLoginUrlAuthenticationEntryPoint;
-import org.springframework.security.oauth.samples.custom.authentication.CustomUrlAuthenticationFailureHandler;
+import org.springframework.security.oauth.samples.custom.authentication.CustomSimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.custom.filter.SmsCodeFilter;
 import org.springframework.security.oauth.samples.custom.filter.VerifyCodeFilter;
 import org.springframework.security.oauth.samples.custom.password.encoder.CustomPasswordEncoderFactories;
@@ -78,7 +78,7 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
     private LogoutSuccessHandler logoutSuccessHandler;
 
     @Autowired
-    private CustomUrlAuthenticationFailureHandler customUrlAuthenticationFailureHandler;
+    private CustomSimpleUrlAuthenticationFailureHandler customSimpleUrlAuthenticationFailureHandler;
 
     @Autowired
     private LoginConfigProperties loginConfigProperties;
@@ -138,15 +138,15 @@ public class CustomAuthorizationWebSecurityConfigurer extends WebSecurityConfigu
 
         //定义登录操作
         String defaultFailureUrl = "/login-error";
-        customUrlAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
+        customSimpleUrlAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
         http.formLogin()
                 //定义解析登录时除了用户密码外的验证详细信息
                 .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
                 //设置自定义的登录页面
                 .loginPage("/login")
-        //登录失败跳转，指定的路径要能匿名访问
+                //登录失败跳转，指定的路径要能匿名访问
 //                .failureUrl("/login-error")
-                .failureHandler(customUrlAuthenticationFailureHandler)
+                .failureHandler(customSimpleUrlAuthenticationFailureHandler)
                 //登录成功重定向地址(与登录成功调转地址)
 //                .successForwardUrl("/index");
                 //登录成功后自定义的用户信息记录,比如记录登录用户,登录用户数等等

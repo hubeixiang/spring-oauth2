@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
-import org.springframework.security.oauth.samples.custom.authentication.CustomUrlAuthenticationFailureHandler;
+import org.springframework.security.oauth.samples.custom.authentication.CustomSimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.web.util.SmsVerifyCodeUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -29,7 +29,7 @@ import java.io.IOException;
 @Component
 public class SmsCodeFilter extends GenericFilterBean {
     @Autowired
-    private CustomUrlAuthenticationFailureHandler customUrlAuthenticationFailureHandler;
+    private CustomSimpleUrlAuthenticationFailureHandler customSimpleUrlAuthenticationFailureHandler;
     private String defaultFilterProcessUrl = "/login-mobile";
 
     public SmsCodeFilter() {
@@ -44,7 +44,7 @@ public class SmsCodeFilter extends GenericFilterBean {
             try {
                 validate(new ServletWebRequest(request));
             } catch (AuthenticationException e) {
-                customUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                customSimpleUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
                 return;
             }
         }

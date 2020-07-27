@@ -33,6 +33,10 @@ spring:
           jwk-set-uri: http://localhost:8090/auth/realms/oauth2-sample/protocol/openid-connect/certs
 
 login:
+  loginform:
+    loginPageUrl:  /login
+    loginErrorPageUrl: /login-error
+    loginDefaultSucessUrl:  /index
   oauthClient:
     clientId: bss-embed-white
     clientSecret: secret

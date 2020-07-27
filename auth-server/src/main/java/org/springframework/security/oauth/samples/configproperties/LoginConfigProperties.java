@@ -6,12 +6,22 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "login")
 public class LoginConfigProperties {
+    //登录页面相关的url定义
+    private Loginform loginform = new Loginform();
     //oauth登录默认使用的clientid
     private OauthClient oauthClient = new OauthClient();
     private Captcha captcha = new Captcha();
     private Password password = new Password();
     private Sms sms = new Sms();
     private UserProfile userProfile = new UserProfile();
+
+    public Loginform getLoginform() {
+        return loginform;
+    }
+
+    public void setLoginform(Loginform loginform) {
+        this.loginform = loginform;
+    }
 
     public OauthClient getOauthClient() {
         return oauthClient;

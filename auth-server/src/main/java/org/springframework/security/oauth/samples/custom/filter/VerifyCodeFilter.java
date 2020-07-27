@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.cache.commons.entity.StringCacheEntity;
 import org.springframework.security.oauth.samples.cache.RedisUtil;
-import org.springframework.security.oauth.samples.custom.authentication.CustomUrlAuthenticationFailureHandler;
+import org.springframework.security.oauth.samples.custom.authentication.CustomSimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.oauth.samples.web.util.VerifyCodeUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,7 +27,7 @@ import java.io.IOException;
 public class VerifyCodeFilter extends GenericFilterBean {
 
     @Autowired
-    private CustomUrlAuthenticationFailureHandler customUrlAuthenticationFailureHandler;
+    private CustomSimpleUrlAuthenticationFailureHandler customSimpleUrlAuthenticationFailureHandler;
 
     private String defaultFilterProcessUrl = "/login";
 
@@ -53,7 +53,7 @@ public class VerifyCodeFilter extends GenericFilterBean {
                     throw new AuthenticationServiceException(getMessage("WelcomeLoginController.verifyCode_timeout_ERROR"));
                 }
             } catch (AuthenticationException e) {
-                customUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                customSimpleUrlAuthenticationFailureHandler.onAuthenticationFailure(request, response, e);
                 return;
             }
         }
