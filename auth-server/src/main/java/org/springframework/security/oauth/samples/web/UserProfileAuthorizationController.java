@@ -13,16 +13,21 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth.samples.configproperties.LoginConfigProperties;
 import org.springframework.security.oauth.samples.web.util.ApiServiceConstants;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This controller returns current authenticated user.
@@ -46,6 +51,9 @@ public class UserProfileAuthorizationController extends UserProfileController im
     @Qualifier("hiosMobileUserDetailsService")
     private UserDetailsService hiosMobileUserDetailsService;
 
+    @Autowired
+    private SessionRegistry sessionRegistry;
+
     public UserProfileAuthorizationController() {
     }
 
@@ -53,7 +61,28 @@ public class UserProfileAuthorizationController extends UserProfileController im
         request.getSession().invalidate();
     }
 
-    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/user","/oauth2/user"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/online/users/count", "/oauth2/online/users/count"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public Object online(final HttpServletRequest request,
+                         final HttpServletResponse response) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            logout(request);
+            throw new AuthenticationServiceException(String.format("Missing [%s]", "Authentication"));
+        }
+
+        if (authentication.getPrincipal() == null) {
+            logout(request);
+            throw new AuthenticationServiceException(String.format("Missing [%s]", "Authentication Principal"));
+        }
+        Map<String, Integer> map = new HashMap<>();
+        List<Object> users = sessionRegistry.getAllPrincipals();
+        int size = users.size();
+        map.put("count", size);
+        return map;
+    }
+
+    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/user", "/oauth2/user"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Object user(final HttpServletRequest request,
                        final HttpServletResponse response) {
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
@@ -88,7 +117,7 @@ public class UserProfileAuthorizationController extends UserProfileController im
         return currentUser;
     }
 
-    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/status","/oauth2/status"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = {ApiServiceConstants.BASE_API_URL + "/status", "/oauth2/status"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public UserStatus status(final HttpServletRequest request,
                              final HttpServletResponse response) {
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
